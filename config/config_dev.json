@@ -1,0 +1,14 @@
+{
+  "server": {
+    "server_port": 3000
+  },
+  "database": {
+    "db_type": "mysql",
+    "host": "localhost",
+    "db_port": 3306,
+    "db_name": "airplanes",
+    "admin_name": "admin",
+    "db_password": "auth_password_123",
+    "ssl": "disable"
+  }
+}
