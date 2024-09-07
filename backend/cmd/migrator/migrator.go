@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 
-	"gitflic.ru/project/pereverzevivan/jwt-auth-golang/config"
+	"gitflic.ru/project/pereverzevivan/biznes-processy-laba-1/backend/config"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database"

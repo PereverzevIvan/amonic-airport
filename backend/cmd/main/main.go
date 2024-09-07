@@ -3,8 +3,8 @@ package main
 import (
 	"fmt"
 
-	"gitflic.ru/project/pereverzevivan/jwt-auth-golang/config"
-	"gitflic.ru/project/pereverzevivan/jwt-auth-golang/internal/services/storage"
+	"gitflic.ru/project/pereverzevivan/biznes-processy-laba-1/backend/config"
+	service "gitflic.ru/project/pereverzevivan/biznes-processy-laba-1/backend/internal/services"
 	"github.com/gofiber/fiber/v3"
 	"github.com/gofiber/fiber/v3/log"
 )
@@ -13,7 +13,7 @@ func main() {
 	cfg := config.MustLoadConfig()
 	fmt.Println(cfg)
 
-	conn := storage.NewStorage(cfg.ConfigDatabase)
+	conn := service.NewStorage(cfg.ConfigDatabase)
 	fmt.Println(conn)
 
 	app := fiber.New()

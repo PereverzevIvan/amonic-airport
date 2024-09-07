@@ -1,9 +1,9 @@
-package user
+package models
 
 import "time"
 
 type User struct {
-	ID        int
+	ID        int ``
 	OfficeID  int
 	RoleID    int
 	Email     string
@@ -12,4 +12,8 @@ type User struct {
 	LastName  string
 	Birthday  time.Time
 	Active    bool
+}
+
+func (User) TableName() string {
+	return "users"
 }

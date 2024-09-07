@@ -1,4 +1,4 @@
-module gitflic.ru/project/pereverzevivan/jwt-auth-golang
+module gitflic.ru/project/pereverzevivan/biznes-processy-laba-1/backend
 
 go 1.22.6
 

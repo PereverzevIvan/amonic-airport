@@ -1,9 +1,9 @@
-package storage
+package service
 
 import (
 	"fmt"
 
-	"gitflic.ru/project/pereverzevivan/jwt-auth-golang/config"
+	"gitflic.ru/project/pereverzevivan/biznes-processy-laba-1/backend/config"
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
