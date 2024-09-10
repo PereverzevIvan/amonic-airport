@@ -25,8 +25,8 @@ type UserService struct {
 	userRepo UserRepo
 }
 
-func NewUserService() UserService {
-	return UserService{}
+func NewUserService(ur UserRepo) UserService {
+	return UserService{ur}
 }
 
 func (us UserService) GetByID(user_id int) (*models.User, error) {
