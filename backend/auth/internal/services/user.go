@@ -29,11 +29,11 @@ func NewUserService() UserService {
 	return UserService{}
 }
 
-func (us *UserService) GetByID(user_id int) (models.User, error) {
-	res, err := us.userRepo.GetByID(user_id)
+func (us UserService) GetByID(user_id int) (*models.User, error) {
+	user, err := us.userRepo.GetByID(user_id)
 	if err != nil {
-		return models.User{}, err
+		return &models.User{}, err
 	}
 
-	return res, nil
+	return &user, nil
 }

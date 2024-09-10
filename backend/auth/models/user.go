@@ -3,15 +3,15 @@ package models
 import "time"
 
 type User struct {
-	ID        int ``
-	OfficeID  int
-	RoleID    int
-	Email     string
-	Password  string
-	FirstName string
-	LastName  string
-	Birthday  time.Time
-	Active    bool
+	ID        int       `json:"id"`
+	OfficeID  int       `json:"office_id"`
+	RoleID    int       `json:"role_id"`
+	Email     string    `json:"email"`
+	Password  string    ``
+	FirstName string    `json:"first_name"`
+	LastName  string    `json:"last_name"`
+	Birthday  time.Time `json:"birthday"`
+	Active    bool      `json:"active"`
 }
 
 func (User) TableName() string {
