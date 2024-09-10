@@ -4,21 +4,21 @@ import (
 	"github.com/gofiber/fiber/v3"
 )
 
-type authUseCase interface {
+type authService interface {
 	IsAdmin(user_id int) (bool, error)
 }
 
 type authMiddleware struct {
-	authUseCase authUseCase
+	authService authService
 }
 
-func NewAuthMiddleware(authUseCase authUseCase) *authMiddleware {
-	return &authMiddleware{authUseCase: authUseCase}
+func NewAuthMiddleware(authService authService) *authMiddleware {
+	return &authMiddleware{authService: authService}
 }
 
 func (am *authMiddleware) IsAdmin(ctx fiber.Ctx) error {
 	// user_id := fiber.Query[int](ctx, "user_id")
-	// is_admin, err := am.authUseCase.IsAdmin(user_id)
+	// is_admin, err := am.authService.IsAdmin(user_id)
 	// if err != nil {
 	// 	return ctx.SendString(err.Error())
 	// }
