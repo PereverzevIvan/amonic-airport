@@ -18,7 +18,10 @@ func main() {
 	fmt.Println(conn)
 
 	app := fiber.New()
+	// app.Get("/asdf", func(c *fiber.Ctx) error {
+	// 	return c.SendString("asdf")
+	// })
 
-	log.Info(app.Listen(fmt.Sprintf(":%d", cfg.ConfigServer.Port)))
 	controllers.InitControllers(app, conn.Conn)
+	log.Info(app.Listen(fmt.Sprintf(":%d", cfg.ConfigServer.Port)))
 }

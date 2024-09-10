@@ -1,7 +1,7 @@
 dev: up
 	go run ./cmd/main/main.go --config=./config/config_dev.json
 
-migrator: up
+migrate: up
 	go run ./cmd/migrator/migrator.go
 
 create_migration:
