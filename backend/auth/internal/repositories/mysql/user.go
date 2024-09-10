@@ -15,11 +15,22 @@ func NewUserRepo(conn *gorm.DB) UserRepo {
 	}
 }
 
-func (u UserRepo) GetByID(user_id int) (models.User, error) {
+func (u UserRepo) GetByID(user_id int) (*models.User, error) {
 	var user models.User
 	err := u.Conn.First(&user, user_id).Error
 	if err != nil {
-		return models.User{}, err
+		return nil, err
 	}
-	return user, err
+	return &user, err
+}
+
+func (u UserRepo) IsAdmin(user_id int) (bool, error) {
+	var role_id models.ERole
+	res := u.Conn.Model(&models.User{}).
+		Select("RoleID").
+		Where("id = ?", user_id).
+		Scan(&role_id)
+
+	is_admin := role_id == models.KRoleAdmin
+	return is_admin, res.Error
 }

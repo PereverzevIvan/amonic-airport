@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"gitflic.ru/project/pereverzevivan/biznes-processy-laba-1/backend/internal/middleware"
 	mysql_repo "gitflic.ru/project/pereverzevivan/biznes-processy-laba-1/backend/internal/repositories/mysql"
 	service "gitflic.ru/project/pereverzevivan/biznes-processy-laba-1/backend/internal/services"
 	usecase "gitflic.ru/project/pereverzevivan/biznes-processy-laba-1/backend/internal/usecases"
@@ -14,5 +15,7 @@ func InitControllers(app *fiber.App, conn *gorm.DB) {
 	userRepo := mysql_repo.NewUserRepo(conn)
 	userService := service.NewUserService(userRepo)
 	userUseCase := usecase.NewUserUseCase(userService)
-	NewUserController(&api, userUseCase)
+
+	authMiddleware := middleware.NewAuthMiddleware(userUseCase)
+	NewUserController(&api, userUseCase, authMiddleware)
 }

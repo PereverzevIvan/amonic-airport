@@ -9,6 +9,7 @@ type user struct {
 
 type userService interface {
 	GetByID(user_id int) (*models.User, error)
+	IsAdmin(user_id int) (bool, error)
 }
 
 type userUseCase struct {
@@ -26,4 +27,9 @@ func (uu *userUseCase) GetByID(user_id int) (*models.User, error) {
 	}
 
 	return user, nil
+}
+
+func (uu *userUseCase) IsAdmin(user_id int) (bool, error) {
+	is_admin, err := uu.userService.IsAdmin(user_id)
+	return is_admin, err
 }

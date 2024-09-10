@@ -6,7 +6,8 @@ import (
 )
 
 type UserRepo interface {
-	GetByID(user_id int) (models.User, error)
+	GetByID(user_id int) (*models.User, error)
+	IsAdmin(user_id int) (bool, error)
 	// GetByEmail(user_email string) (models.User, error)
 	// Create(*models.User) error
 	// Update(*models.User) error
@@ -31,9 +32,10 @@ func NewUserService(ur UserRepo) UserService {
 
 func (us UserService) GetByID(user_id int) (*models.User, error) {
 	user, err := us.userRepo.GetByID(user_id)
-	if err != nil {
-		return &models.User{}, err
-	}
+	return user, err
+}
 
-	return &user, nil
+func (us UserService) IsAdmin(user_id int) (bool, error) {
+	is_admin, err := us.userRepo.IsAdmin(user_id)
+	return is_admin, err
 }

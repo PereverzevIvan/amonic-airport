@@ -5,7 +5,7 @@ import "time"
 type User struct {
 	ID        int       `json:"id"`
 	OfficeID  int       `json:"office_id"`
-	RoleID    int       `json:"role_id"`
+	RoleID    int       `json:"role_id" gorm:"Column:RoleID"`
 	Email     string    `json:"email"`
 	Password  string    `json:"-"`
 	FirstName string    `json:"first_name"`

@@ -13,14 +13,18 @@ type UserUseCase interface {
 	// Delete(user_id int) error
 }
 
+type AuthMiddleware interface {
+	IsAdmin(ctx fiber.Ctx) error
+}
+
 type UserController struct {
 	userUseCase UserUseCase
 }
 
-func NewUserController(api *fiber.Router, userUseCase UserUseCase) {
+func NewUserController(api *fiber.Router, userUseCase UserUseCase, authMiddleware AuthMiddleware) {
 	controller := &UserController{userUseCase: userUseCase}
 
-	(*api).Get("user/", controller.GetByID)
+	(*api).Get("user/", controller.GetByID, authMiddleware.IsAdmin)
 }
 
 func (uc *UserController) GetByID(ctx fiber.Ctx) error {
