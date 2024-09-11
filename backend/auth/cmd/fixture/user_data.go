@@ -9,14 +9,14 @@ import (
 )
 
 type UserData struct {
-	RoleID    int
-	Email     string
-	Password  string
-	FirstName string
-	LastName  string
-	Country   string
-	Birthdate time.Time
-	Active    bool
+	RoleID      int
+	Email       string
+	Password    string
+	FirstName   string
+	LastName    string
+	OfficeTitle string
+	Birthdate   time.Time
+	Active      bool
 }
 
 func fetchConfigPath() string {
@@ -66,7 +66,7 @@ func ParseUserDataFromCSV() []UserData {
 		user.Password = r[2]
 		user.FirstName = r[3]
 		user.LastName = r[4]
-		user.Country = r[5]
+		user.OfficeTitle = r[5]
 
 		parsedDate, err := time.Parse("1/2/2006", r[6])
 		if err != nil {
