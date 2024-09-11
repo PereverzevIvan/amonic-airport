@@ -14,10 +14,6 @@ type UserRepo interface {
 	// Delete(user_id int) error
 }
 
-type OfficeRepo interface {
-	GetByID(office_id int) (models.Office, error)
-}
-
 type RoleRepo interface {
 	GetByID(role_id int) (models.Role, error)
 }

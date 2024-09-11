@@ -21,4 +21,7 @@ func InitControllers(app *fiber.App, conn *gorm.DB) {
 	countryService := service.NewCountryService(countryRepo)
 	AddCountryControllerRoutes(&api, countryService)
 
+	officeRepo := mysql_repo.NewOfficeRepo(conn)
+	officeService := service.NewOfficeService(officeRepo)
+	AddOfficeControllerRoutes(&api, officeService)
 }
