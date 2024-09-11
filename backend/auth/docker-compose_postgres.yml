@@ -5,7 +5,7 @@ services:
     restart: always
     environment:
       POSTGRES_USER: admin
-      POSTGRES_PASSWORD: auth_password_123
+      POSTGRES_PASSWORD: admin
       POSTGRES_DB: auth
       PGDATA: /var/lib/postgresql/data/pgdata
     ports:

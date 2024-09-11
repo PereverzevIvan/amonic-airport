@@ -8,7 +8,7 @@
     "db_port": 3306,
     "db_name": "airplanes",
     "admin_name": "admin",
-    "db_password": "auth_password_123",
+    "db_password": "admin",
     "ssl": "disable"
   }
 }
