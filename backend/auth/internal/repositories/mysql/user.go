@@ -15,6 +15,15 @@ func NewUserRepo(conn *gorm.DB) UserRepo {
 	}
 }
 
+func (r UserRepo) Create(user *models.User) error {
+	err := r.Conn.Create(user).Error
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (u UserRepo) GetByID(user_id int) (*models.User, error) {
 	var user models.User
 	err := u.Conn.First(&user, user_id).Error

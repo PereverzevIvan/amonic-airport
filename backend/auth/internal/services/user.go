@@ -9,7 +9,7 @@ type UserRepo interface {
 	GetByID(user_id int) (*models.User, error)
 	IsAdmin(user_id int) (bool, error)
 	// GetByEmail(user_email string) (models.User, error)
-	// Create(*models.User) error
+	Create(*models.User) error
 	// Update(*models.User) error
 	// Delete(user_id int) error
 }
@@ -34,4 +34,8 @@ func (us UserService) GetByID(user_id int) (*models.User, error) {
 func (us UserService) IsAdmin(user_id int) (bool, error) {
 	is_admin, err := us.userRepo.IsAdmin(user_id)
 	return is_admin, err
+}
+
+func (us UserService) Create(user *models.User) error {
+	return us.userRepo.Create(user)
 }
