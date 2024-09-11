@@ -6,5 +6,5 @@ type Country struct {
 }
 
 func (Country) TableName() string {
-	return "country"
+	return "countries"
 }
