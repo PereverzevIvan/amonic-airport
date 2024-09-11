@@ -4,9 +4,8 @@ dev: up
 migrate: up
 	go run ./cmd/migrator/migrator.go
 
-create_migration:
-	migrate create -ext sql -dir ./storage/migrations/ -seq 
-
+users:
+	go run ./cmd/fixture/user_data.go
 
 up:
 	docker compose up -d
