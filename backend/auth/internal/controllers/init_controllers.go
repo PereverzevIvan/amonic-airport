@@ -15,5 +15,10 @@ func InitControllers(app *fiber.App, conn *gorm.DB) {
 	userService := service.NewUserService(userRepo)
 
 	authMiddleware := middleware.NewAuthMiddleware(userService)
-	NewUserController(&api, userService, authMiddleware)
+	AddUserControllerRoutes(&api, userService, authMiddleware)
+
+	countryRepo := mysql_repo.NewCountryRepo(conn)
+	countryService := service.NewCountryService(countryRepo)
+	AddCountryControllerRoutes(&api, countryService)
+
 }

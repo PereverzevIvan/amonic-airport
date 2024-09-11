@@ -21,7 +21,7 @@ type UserController struct {
 	userUseCase UserUseCase
 }
 
-func NewUserController(api *fiber.Router, userUseCase UserUseCase, authMiddleware AuthMiddleware) {
+func AddUserControllerRoutes(api *fiber.Router, userUseCase UserUseCase, authMiddleware AuthMiddleware) {
 	controller := &UserController{userUseCase: userUseCase}
 
 	(*api).Get("user/", controller.GetByID, authMiddleware.IsAdmin)
