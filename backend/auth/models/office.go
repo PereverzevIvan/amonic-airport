@@ -9,5 +9,5 @@ type Office struct {
 }
 
 func (Office) TableName() string {
-	return "office"
+	return "offices"
 }
