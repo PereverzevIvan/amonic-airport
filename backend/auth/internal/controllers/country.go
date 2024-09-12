@@ -23,6 +23,17 @@ func AddCountryControllerRoutes(router *fiber.Router, s CountryService) {
 	api.Get("/name/:name", controller.GetByName)
 }
 
+// Get Country ByID
+// @Summary      Get Country by id
+// @Description  Get Country by id
+// @Tags         accounts
+// @Accept       json
+// @Produce      json
+// @Param        id   path      int  true  "Country ID"
+// @Success      200  {object}  models.Country
+// @Failure      400  {object}  error
+// @Failure      404  {object}  error
+// @Router       /country/{id} [get]
 func (con CountryController) GetByID(c fiber.Ctx) error {
 	id := fiber.Params[int](c, "id")
 	if id == 0 {
