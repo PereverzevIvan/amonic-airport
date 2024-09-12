@@ -13,6 +13,32 @@ import (
 	"gitflic.ru/project/pereverzevivan/biznes-processy-laba-1/backend/models"
 )
 
+func main() {
+	cfg := config.MustLoadConfig()
+	conn := service.NewStorage(cfg.ConfigDatabase)
+
+	officeRepo := mysql_repo.NewOfficeRepo(conn.Conn)
+	officeService := service.NewOfficeService(officeRepo)
+	userRepo := mysql_repo.NewUserRepo(conn.Conn)
+	userService := service.NewUserService(userRepo)
+
+	AddUsersFromCSV(userService, officeService)
+}
+
+func AddUsersFromCSV(userSrv service.UserService, officeSrv service.OfficeService) {
+	fixturesPath := fetchConfigPath()
+	users := ParseUserDataFromCSV(fixturesPath, officeSrv)
+
+	for _, u := range users {
+		err := userSrv.Create(&u)
+		if err != nil {
+			fmt.Println("Не удалось создать пользователя: ", err)
+		} else {
+			fmt.Println("Пользователей успешно создан: ", u)
+		}
+	}
+}
+
 func fetchConfigPath() string {
 	var res string
 
@@ -45,7 +71,7 @@ func ParseUserDataFromCSV(path string, officeService service.OfficeService) []mo
 
 	var data []models.User
 
-	for i, r := range records {
+	for _, r := range records {
 		var user models.User
 
 		if r[0] == "Administrator" {
@@ -67,7 +93,7 @@ func ParseUserDataFromCSV(path string, officeService service.OfficeService) []mo
 
 		parsedDate, err := time.Parse("1/2/2006", r[6])
 		if err != nil {
-			fmt.Printf("Не удалось считать дату рождения в строке %d: %v\n", i, err.Error())
+			panic(err)
 		}
 		user.Birthday = parsedDate
 
@@ -77,30 +103,4 @@ func ParseUserDataFromCSV(path string, officeService service.OfficeService) []mo
 	}
 
 	return data
-}
-
-func AddUsersFromCSV(userSrv service.UserService, officeSrv service.OfficeService) {
-	fixturesPath := fetchConfigPath()
-	users := ParseUserDataFromCSV(fixturesPath, officeSrv)
-
-	for _, u := range users {
-		err := userSrv.Create(&u)
-		if err != nil {
-			fmt.Println("Не удалось создать пользователя: ", err)
-		} else {
-			fmt.Println("Пользователей успешно создан: ", u)
-		}
-	}
-}
-
-func main() {
-	cfg := config.MustLoadConfig()
-	conn := service.NewStorage(cfg.ConfigDatabase)
-
-	officeRepo := mysql_repo.NewOfficeRepo(conn.Conn)
-	officeService := service.NewOfficeService(officeRepo)
-	userRepo := mysql_repo.NewUserRepo(conn.Conn)
-	userService := service.NewUserService(userRepo)
-
-	AddUsersFromCSV(userService, officeService)
 }
