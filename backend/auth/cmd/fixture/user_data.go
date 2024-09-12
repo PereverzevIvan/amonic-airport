@@ -6,17 +6,37 @@ import (
 	"fmt"
 	"os"
 	"time"
+
+	"gitflic.ru/project/pereverzevivan/biznes-processy-laba-1/backend/config"
+	mysql_repo "gitflic.ru/project/pereverzevivan/biznes-processy-laba-1/backend/internal/repositories/mysql"
+	service "gitflic.ru/project/pereverzevivan/biznes-processy-laba-1/backend/internal/services"
+	"gitflic.ru/project/pereverzevivan/biznes-processy-laba-1/backend/models"
 )
 
-type UserData struct {
-	RoleID      int
-	Email       string
-	Password    string
-	FirstName   string
-	LastName    string
-	OfficeTitle string
-	Birthdate   time.Time
-	Active      bool
+func main() {
+	cfg := config.MustLoadConfig()
+	conn := service.NewStorage(cfg.ConfigDatabase)
+
+	officeRepo := mysql_repo.NewOfficeRepo(conn.Conn)
+	officeService := service.NewOfficeService(officeRepo)
+	userRepo := mysql_repo.NewUserRepo(conn.Conn)
+	userService := service.NewUserService(userRepo)
+
+	AddUsersFromCSV(userService, officeService)
+}
+
+func AddUsersFromCSV(userSrv service.UserService, officeSrv service.OfficeService) {
+	fixturesPath := fetchConfigPath()
+	users := ParseUserDataFromCSV(fixturesPath, officeSrv)
+
+	for _, u := range users {
+		err := userSrv.Create(&u)
+		if err != nil {
+			fmt.Println("Не удалось создать пользователя: ", err)
+		} else {
+			fmt.Println("Пользователей успешно создан: ", u)
+		}
+	}
 }
 
 func fetchConfigPath() string {
@@ -28,11 +48,9 @@ func fetchConfigPath() string {
 	return res
 }
 
-func ParseUserDataFromCSV() []UserData {
-	path := fetchConfigPath()
-
+func ParseUserDataFromCSV(path string, officeService service.OfficeService) []models.User {
 	if path == "" {
-		panic("Путь до конфига пустой")
+		panic("Путь до файла с фикстурами пустой")
 	}
 
 	if _, err := os.Stat(path); os.IsNotExist(err) {
@@ -51,10 +69,10 @@ func ParseUserDataFromCSV() []UserData {
 		panic(err)
 	}
 
-	var data []UserData
+	var data []models.User
 
-	for i, r := range records {
-		var user UserData
+	for _, r := range records {
+		var user models.User
 
 		if r[0] == "Administrator" {
 			user.RoleID = 1
@@ -66,13 +84,18 @@ func ParseUserDataFromCSV() []UserData {
 		user.Password = r[2]
 		user.FirstName = r[3]
 		user.LastName = r[4]
-		user.OfficeTitle = r[5]
+
+		office, err := officeService.GetByTitle(r[5])
+		if err != nil {
+			panic(err)
+		}
+		user.OfficeID = office.ID
 
 		parsedDate, err := time.Parse("1/2/2006", r[6])
 		if err != nil {
-			fmt.Printf("Не удалось считать дату рождения в строке %d: %v\n", i, err.Error())
+			panic(err)
 		}
-		user.Birthdate = parsedDate
+		user.Birthday = parsedDate
 
 		user.Active = r[7] == "1"
 
@@ -80,8 +103,4 @@ func ParseUserDataFromCSV() []UserData {
 	}
 
 	return data
-}
-
-func main() {
-	ParseUserDataFromCSV()
 }
