@@ -7,6 +7,38 @@ definitions:
       name:
         type: string
     type: object
+  models.Office:
+    properties:
+      contact:
+        type: string
+      countryID:
+        type: integer
+      id:
+        type: integer
+      phone:
+        type: string
+      title:
+        type: string
+    type: object
+  models.User:
+    properties:
+      active:
+        type: boolean
+      birthday:
+        type: string
+      email:
+        type: string
+      first_name:
+        type: string
+      id:
+        type: integer
+      last_name:
+        type: string
+      office_id:
+        type: integer
+      role_id:
+        type: integer
+    type: object
 host: localhost:3000
 info:
   contact:
@@ -24,7 +56,7 @@ paths:
     get:
       consumes:
       - application/json
-      description: Get Country by id
+      description: Получение информации о стране по ее числовому ID
       parameters:
       - description: Country ID
         in: path
@@ -46,5 +78,59 @@ paths:
           schema: {}
       summary: Get Country by id
       tags:
-      - accounts
+      - Country
+  /office/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Получение информации об офисе по его идентификатору
+      parameters:
+      - description: Office ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Office'
+        "400":
+          description: Bad Request
+          schema: {}
+        "404":
+          description: Not Found
+          schema: {}
+      summary: Get Office by ID
+      tags:
+      - Office
+  /user/:
+    get:
+      consumes:
+      - application/json
+      description: Получение информации о пользователе по его идентификатору
+      parameters:
+      - description: User ID
+        in: query
+        name: user_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.User'
+        "400":
+          description: Bad Request
+          schema: {}
+        "404":
+          description: Not Found
+          schema: {}
+      summary: Get user by ID
+      tags:
+      - Users
 swagger: "2.0"

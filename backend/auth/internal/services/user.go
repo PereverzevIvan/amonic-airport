@@ -2,6 +2,7 @@ package service
 
 import (
 	"gitflic.ru/project/pereverzevivan/biznes-processy-laba-1/backend/models"
+	"golang.org/x/crypto/bcrypt"
 	// "github.com/gofiber/fiber/v3/log"
 )
 
@@ -37,5 +38,11 @@ func (us UserService) IsAdmin(user_id int) (bool, error) {
 }
 
 func (us UserService) Create(user *models.User) error {
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+	if err != nil {
+		return err
+	}
+
+	user.Password = string(hashedPassword)
 	return us.userRepo.Create(user)
 }

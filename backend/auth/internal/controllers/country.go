@@ -20,13 +20,13 @@ func AddCountryControllerRoutes(router *fiber.Router, s CountryService) {
 	controller := CountryController{CountryService: s}
 
 	api.Get("/:id", controller.GetByID)
-	api.Get("/name/:name", controller.GetByName)
+	api.Get("/", controller.GetByName)
 }
 
-// Get Country ByID
+// Get Country By ID
 // @Summary      Get Country by id
-// @Description  Get Country by id
-// @Tags         accounts
+// @Description  Получение информации о стране по ее числовому ID
+// @Tags         Country
 // @Accept       json
 // @Produce      json
 // @Param        id   path      int  true  "Country ID"
@@ -41,21 +41,6 @@ func (con CountryController) GetByID(c fiber.Ctx) error {
 	}
 
 	country, err := con.CountryService.GetByID(id)
-	if err != nil {
-		// TODO: Добавить обработку разных ошибок
-		return c.Status(fiber.StatusNotFound).SendString("Не удалось получить страну")
-	}
-
-	return c.Status(fiber.StatusOK).JSON(country)
-}
-
-func (con CountryController) GetByName(c fiber.Ctx) error {
-	name := fiber.Params[string](c, "name")
-	if name == "" {
-		c.Status(fiber.StatusBadRequest).SendString("title страны обязателен")
-	}
-
-	country, err := con.CountryService.GetByName(name)
 	if err != nil {
 		// TODO: Добавить обработку разных ошибок
 		return c.Status(fiber.StatusNotFound).SendString("Не удалось получить страну")
