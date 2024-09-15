@@ -3,46 +3,34 @@ package controllers
 import (
 	"net/http"
 
-	"gitflic.ru/project/pereverzevivan/biznes-processy-laba-1/backend/models"
+	"gitflic.ru/project/pereverzevivan/biznes-processy-laba-1/backend/internal/utils"
 	"github.com/gofiber/fiber/v3"
 	"github.com/gofiber/fiber/v3/log"
-	"github.com/golang-jwt/jwt"
 )
 
-type jwtUseCase interface {
-	RefreshTokens(ctx fiber.Ctx, user *models.User) error
-	GetAccessToken(ctx fiber.Ctx) (*jwt.Token, error)
-	GetRefreshToken(ctx fiber.Ctx) (*jwt.Token, error)
-	ClearJWTCookies(ctx fiber.Ctx) error
-	GetTokenUserId(token *jwt.Token) (int, error)
-}
-
-type userService interface {
-	GetByID(user_id int) (*models.User, error)
-	GetByEmail(email string) (*models.User, error)
-	IsPasswordCorrect(user *models.User, password string) bool
-}
-
-type AuthMiddleware interface {
-	IsActive(ctx fiber.Ctx) error
-	IsAdmin(ctx fiber.Ctx) error
-}
-
 type AuthController struct {
-	jwtUseCase  jwtUseCase
-	userService userService
+	jwtUseCase         jwtUseCase
+	userService        userService
+	userSessionUseCase userSessionUseCase
 }
 
-func AddAuthControllerRoutes(api *fiber.Router, jwtUseCase jwtUseCase, userService userService, authMiddleware AuthMiddleware) {
+func AddAuthControllerRoutes(
+	api *fiber.Router,
+	jwtUseCase jwtUseCase,
+	userService userService,
+	userSessionUseCase userSessionUseCase,
+	authMiddleware AuthMiddleware,
+) {
 	controller := &AuthController{
-		jwtUseCase:  jwtUseCase,
-		userService: userService,
+		jwtUseCase:         jwtUseCase,
+		userService:        userService,
+		userSessionUseCase: userSessionUseCase,
 	}
 
 	(*api).Post("login/", controller.Login)
 	// (*api).Get("register/", controller.Register, authMiddleware.IsAdmin)
 	(*api).Get("logout/", controller.Logout)
-	(*api).Get("refresh/", controller.Refresh, authMiddleware.IsActive)
+	(*api).Get("refresh/", controller.Refresh)
 }
 
 // Вход в систему
@@ -82,12 +70,7 @@ func (ac *AuthController) Login(ctx fiber.Ctx) error {
 		return ctx.SendStatus(http.StatusInternalServerError)
 	}
 
-	if user == nil {
-		ctx.SendStatus(http.StatusUnauthorized)
-		return ctx.SendString("Wrong email or password")
-	}
-
-	if !ac.userService.IsPasswordCorrect(user, password) {
+	if user == nil || !ac.userService.IsPasswordCorrect(user, password) {
 		ctx.SendStatus(http.StatusUnauthorized)
 		return ctx.SendString("Wrong email or password")
 	}
@@ -95,8 +78,20 @@ func (ac *AuthController) Login(ctx fiber.Ctx) error {
 	// Обновление токенов
 	err = ac.jwtUseCase.RefreshTokens(ctx, user)
 	if err != nil {
-		log.Error(err)
-		return ctx.SendStatus(http.StatusInternalServerError)
+		return utils.LogErrorIfNotEmpty(err)
+	}
+
+	// Проверить последнюю сессию, если не было выхода
+	// и crashReasonType не установлен -> обновить эту невалидную сессию,
+	// установив crashReason = 0 и KDefaultInvalidaSessionReason
+	err = ac.userSessionUseCase.UpdateNoLogoutSession(ctx, user.ID)
+	if err != nil {
+		return utils.LogErrorIfNotEmpty(err)
+	}
+	// Запись сессии
+	err = ac.userSessionUseCase.CreateNewLoginSession(ctx, user.ID)
+	if err != nil {
+		return utils.LogErrorIfNotEmpty(err)
 	}
 
 	ctx.SendStatus(http.StatusOK)
@@ -104,18 +99,9 @@ func (ac *AuthController) Login(ctx fiber.Ctx) error {
 }
 
 func (ac *AuthController) Refresh(ctx fiber.Ctx) error {
-	// Получаем resfresh токен
-	refresh_token, err := ac.jwtUseCase.GetRefreshToken(ctx)
+	user_id, err := ac.jwtUseCase.GetUserIdFromToken(ctx, true)
 	if err != nil {
-		log.Error(err)
-		return ctx.SendStatus(http.StatusInternalServerError)
-	}
-
-	// Получаем user_id и затем пользователя
-	user_id, err := ac.jwtUseCase.GetTokenUserId(refresh_token)
-	if err != nil {
-		log.Error(err)
-		return ctx.SendStatus(http.StatusInternalServerError)
+		return utils.LogErrorIfNotEmpty(err)
 	}
 
 	user, err := ac.userService.GetByID(user_id)
@@ -127,26 +113,16 @@ func (ac *AuthController) Refresh(ctx fiber.Ctx) error {
 	// Обновляем токены
 	err = ac.jwtUseCase.RefreshTokens(ctx, user)
 	if err != nil {
-		log.Error(err)
-		return ctx.SendStatus(http.StatusInternalServerError)
+		return utils.LogErrorIfNotEmpty(err)
 	}
 
 	return ctx.SendStatus(http.StatusOK)
 }
 
 func (ac *AuthController) Logout(ctx fiber.Ctx) error {
-	// Получаем resfresh токен
-	refresh_token, err := ac.jwtUseCase.GetRefreshToken(ctx)
+	user_id, err := ac.jwtUseCase.GetUserIdFromToken(ctx, true)
 	if err != nil {
-		log.Error(err)
-		return ctx.SendStatus(http.StatusInternalServerError)
-	}
-
-	// Получаем user_id и затем пользователя
-	user_id, err := ac.jwtUseCase.GetTokenUserId(refresh_token)
-	if err != nil {
-		log.Error(err)
-		return ctx.SendStatus(http.StatusInternalServerError)
+		return utils.LogErrorIfNotEmpty(err)
 	}
 
 	user, err := ac.userService.GetByID(user_id)
@@ -161,5 +137,10 @@ func (ac *AuthController) Logout(ctx fiber.Ctx) error {
 	ctx.ClearCookie("access-token")
 	ctx.ClearCookie("refresh-token")
 
+	// Помечаем сессию
+	err = ac.userSessionUseCase.LogoutLastSession(ctx, user.ID)
+	if err != nil {
+		return utils.LogErrorIfNotEmpty(err)
+	}
 	return ctx.SendString("logout")
 }

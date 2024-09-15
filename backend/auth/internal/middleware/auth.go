@@ -3,16 +3,14 @@ package middleware
 import (
 	"net/http"
 
+	"gitflic.ru/project/pereverzevivan/biznes-processy-laba-1/backend/internal/utils"
 	"github.com/gofiber/fiber/v3"
 	"github.com/gofiber/fiber/v3/log"
-	"github.com/golang-jwt/jwt"
 )
 
 type jwtUseCase interface {
-	GetAccessToken(ctx fiber.Ctx) (*jwt.Token, error)
-	// ClearJWTCookies(ctx fiber.Ctx) error
-	GetTokenUserId(token *jwt.Token) (int, error)
-	GetTokenVersion(token *jwt.Token) (int, error)
+	GetUserIdFromToken(ctx fiber.Ctx, use_refresh_token bool) (int, error)
+	// GetVersionFromToken(ctx fiber.Ctx, use_refresh_token bool) (int, error)
 }
 
 type userService interface {
@@ -33,22 +31,9 @@ func NewAuthMiddleware(jwtUseCase jwtUseCase, userService userService) *authMidd
 }
 
 func (am *authMiddleware) IsActive(ctx fiber.Ctx) error {
-	// Получаем и проверям access_token из запроса
-	access_token, err := am.jwtUseCase.GetAccessToken(ctx)
+	user_id, err := am.jwtUseCase.GetUserIdFromToken(ctx, false)
 	if err != nil {
-		log.Error(err)
-		return ctx.SendStatus(http.StatusInternalServerError)
-	}
-
-	if access_token == nil {
-		ctx.SendStatus(http.StatusUnauthorized)
-		return ctx.SendString("Invalid access token")
-	}
-
-	user_id, err := am.jwtUseCase.GetTokenUserId(access_token)
-	if err != nil {
-		log.Error(err)
-		return ctx.SendStatus(http.StatusInternalServerError)
+		return utils.LogErrorIfNotEmpty(err)
 	}
 
 	// проверка на активен ли аккаунт пользователя в БД
@@ -65,22 +50,9 @@ func (am *authMiddleware) IsActive(ctx fiber.Ctx) error {
 }
 
 func (am *authMiddleware) IsAdmin(ctx fiber.Ctx) error {
-	access_token, err := am.jwtUseCase.GetAccessToken(ctx)
+	user_id, err := am.jwtUseCase.GetUserIdFromToken(ctx, false)
 	if err != nil {
-		log.Error(err)
-		return ctx.SendStatus(http.StatusInternalServerError)
-	}
-
-	if access_token == nil {
-		ctx.SendStatus(http.StatusUnauthorized)
-		return ctx.SendString("Invalid access token")
-	}
-
-	// получаем user_id
-	user_id, err := am.jwtUseCase.GetTokenUserId(access_token)
-	if err != nil {
-		log.Error(err)
-		return ctx.SendStatus(http.StatusInternalServerError)
+		return utils.LogErrorIfNotEmpty(err)
 	}
 
 	// проверка на активен ли аккаунт пользователя в БД

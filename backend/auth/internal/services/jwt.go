@@ -6,8 +6,11 @@ import (
 
 	"gitflic.ru/project/pereverzevivan/biznes-processy-laba-1/backend/config"
 	"gitflic.ru/project/pereverzevivan/biznes-processy-laba-1/backend/models"
+	"github.com/gofiber/fiber/v3/log"
 	"github.com/golang-jwt/jwt"
 )
+
+const KInvalidTokenVersion string = "invalid token version"
 
 type TokensVersionRepo interface {
 	GetUserTokensVersion(user_id int) (int, error)
@@ -100,7 +103,8 @@ func (j jwtService) ValidateToken(token string) (*jwt.Token, error) {
 
 	// Проверка версии токена
 	if jwt_token_version != db_token_version {
-		return nil, fmt.Errorf("invalid token version: token %v != db %v", jwt_token_version, db_token_version)
+		log.Error(fmt.Sprintf("invalid token version: token %v != db %v", jwt_token_version, db_token_version))
+		return nil, fmt.Errorf(KInvalidTokenVersion)
 	}
 
 	if !jwt_token.Valid {
