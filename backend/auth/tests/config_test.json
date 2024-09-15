@@ -1,0 +1,19 @@
+{
+  "server": {
+    "server_port": 3000
+  },
+  "database": {
+    "db_type": "mysql",
+    "host": "localhost",
+    "db_port": 3306,
+    "db_name": "airplanes_test",
+    "admin_name": "test",
+    "db_password": "test",
+    "ssl": "disable"
+  },
+  "jwt": {
+    "secret_key": "test-secret-key",
+    "access_token_expiration": "1m",
+    "refresh_token_expiration": "5m"
+  }
+}

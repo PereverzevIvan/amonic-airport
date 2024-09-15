@@ -22,6 +22,6 @@ func main() {
 	// 	return c.SendString("asdf")
 	// })
 
-	controllers.InitControllers(app, conn.Conn)
+	controllers.InitControllers(app, conn.Conn, &cfg.ConfigJWT)
 	log.Info(app.Listen(fmt.Sprintf(":%d", cfg.ConfigServer.Port)))
 }

@@ -5,7 +5,7 @@ import (
 	"github.com/gofiber/fiber/v3"
 )
 
-type UserUseCase interface {
+type UserService interface {
 	GetByID(user_id int) (*models.User, error)
 	// GetByEmail(user_email string) (models.User, error)
 	// Create(*models.User) error
@@ -13,12 +13,8 @@ type UserUseCase interface {
 	// Delete(user_id int) error
 }
 
-type AuthMiddleware interface {
-	IsAdmin(ctx fiber.Ctx) error
-}
-
 type UserController struct {
-	userUseCase UserUseCase
+	userService UserService
 }
 
 func AddUserControllerRoutes(api *fiber.Router, userUseCase UserUseCase, authMiddleware AuthMiddleware) {
@@ -30,7 +26,7 @@ func AddUserControllerRoutes(api *fiber.Router, userUseCase UserUseCase, authMid
 func (uc *UserController) GetByID(ctx fiber.Ctx) error {
 	user_id := fiber.Query[int](ctx, "user_id")
 
-	user, err := uc.userUseCase.GetByID(user_id)
+	user, err := uc.userService.GetByID(user_id)
 	if err != nil {
 		return ctx.SendString(err.Error())
 	}
