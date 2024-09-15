@@ -1,6 +1,5 @@
 storage/database/
 storage/database
-tests/venv
-tests/__pycache__
-tests/.pytest_cache
+venv
+__pycache__
 .pytest_cache

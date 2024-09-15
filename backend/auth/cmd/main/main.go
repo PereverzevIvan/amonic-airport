@@ -18,7 +18,7 @@ func main() {
 	fmt.Println(conn)
 
 	app := fiber.New()
-	app.Get("/hello", func(ctx fiber.Ctx) error {
+	app.Get("/api/hello", func(ctx fiber.Ctx) error {
 		return ctx.SendString("hello")
 	})
 
