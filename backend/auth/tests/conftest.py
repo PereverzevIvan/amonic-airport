@@ -6,6 +6,8 @@ import logging
 
 from pytest_mysql import factories
 
+# Для вывода сообщений об ошибке со значениями
+pytest.register_assert_rewrite('tests.utils')
 
 
 @pytest.fixture(scope="session")

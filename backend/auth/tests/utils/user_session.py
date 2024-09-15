@@ -47,4 +47,18 @@ class UserSessionClient:
 
         return response, user_sessions
 
+    def update_user_session(self, user_session: UserSession, do_assertion = True):
+        response = requests.patch(
+            f'{self.api_url}/user-sessions', 
+            data={
+                'id': user_session.id,
+                'reason': user_session.invalid_logout_reason,
+                'crash_reason_type': user_session.crash_reason_type,
+            },
+            cookies=self.cookies)
+        
+        if do_assertion:
+            assert response.status_code == 200
+
+        return response
     
