@@ -5,8 +5,8 @@ DROP TABLE IF EXISTS user_sessions;
 CREATE TABLE `user_sessions` (
     `id` int(11) NOT NULL AUTO_INCREMENT,
     `user_id` int(11) NOT NULL,
-    `login_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    `logout_at` timestamp,
+    `login_at` timestamp(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+    `logout_at` timestamp(6),
     `invalid_logout_reason` varchar(255) DEFAULT NULL,
     `crash_reason_type` int(11) DEFAULT 0,
     

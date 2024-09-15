@@ -219,7 +219,7 @@ func (usecase UserSessionUseCase) LogoutLastSession(ctx fiber.Ctx, user_id int) 
 	}
 
 	if last_session.LogoutAt != nil {
-		log.Error("Last session already logged out, user_id: ", user_id)
+		log.Error("Last session already logged out, user_id: ", user_id, ", session_id: ", last_session.ID)
 		ctx.SendStatus(http.StatusInternalServerError)
 		ctx.SendString("Last session already logged out")
 		return fmt.Errorf("")
