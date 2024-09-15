@@ -17,7 +17,10 @@ test_user_wrong_email = {
     "password": "123"
 }
 
+response_text_invalid_token_version = "invalid token version"
+
 class Auth:
+    user_to_login = test_user
     access_token = ""
     refresh_token = ""
     cookies = None
@@ -25,12 +28,13 @@ class Auth:
     # что должно учитываться проверяться в login запросе
     was_last_request_logout = False 
 
-    def __init__(self, api_url):
+    def __init__(self, api_url, user_to_login=test_user):
         self.api_url = api_url
+        self.user_to_login = user_to_login
 
-    def login_user(self, user_to_login=test_user, do_assertion = True):
+    def login_user(self, do_assertion = True):
         response = requests.post(f'{self.api_url}/login', 
-                                 json=user_to_login)
+                                 json=self.user_to_login)
         
         if do_assertion:
             self.__assert_tokens_response(response)
