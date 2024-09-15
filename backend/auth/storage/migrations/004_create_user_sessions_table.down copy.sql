@@ -1,0 +1,3 @@
+use `airplanes`;
+
+DROP TABLE IF EXISTS user_sessions;

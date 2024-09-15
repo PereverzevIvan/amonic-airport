@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"flag"
 	"os"
+	"time"
 )
 
 type ConfigServer struct {
@@ -20,9 +21,18 @@ type ConfigDatabase struct {
 	SSL        string `json:"ssl"`
 }
 
+type ConfigJWT struct {
+	SecretKey                 string        `json:"secret_key"`
+	AccessTokenExpirationStr  string        `json:"access_token_expiration"`
+	RefreshTokenExpirationStr string        `json:"refresh_token_expiration"`
+	AccessTokenExpiration     time.Duration `json:"-"`
+	RefreshTokenExpiration    time.Duration `json:"-"`
+}
+
 type Config struct {
 	ConfigServer   `json:"server"`
 	ConfigDatabase `json:"database"`
+	ConfigJWT      `json:"jwt"`
 }
 
 func fetchConfigPath() string {
@@ -46,12 +56,22 @@ func MustLoadConfig() Config {
 
 	data, err := os.ReadFile(path)
 	if err != nil {
-		panic("Не удалось прочитать файл")
+		panic("Не удалось прочитать файл: " + path)
 	}
 
 	var cfg Config
 	if err := json.Unmarshal(data, &cfg); err != nil {
-		panic("Не удалось прочитать json файл")
+		panic("Не удалось прочитать json файл: " + err.Error())
+	}
+
+	cfg.AccessTokenExpiration, err = time.ParseDuration(cfg.AccessTokenExpirationStr)
+	if err != nil {
+		panic("Не удалось прочитать AccessTokenExpiration: " + err.Error())
+	}
+
+	cfg.RefreshTokenExpiration, err = time.ParseDuration(cfg.RefreshTokenExpirationStr)
+	if err != nil {
+		panic("Не удалось прочитать RefreshTokenExpiration: " + err.Error())
 	}
 
 	return cfg
