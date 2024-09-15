@@ -29,4 +29,12 @@ func InitControllers(app *fiber.App, conn *gorm.DB, jwtConfig *config.ConfigJWT)
 	AddUserControllerRoutes(&api, userService, authMiddleware)
 	AddAuthControllerRoutes(&api, jwtUseCase, userService, userSessionUseCase, authMiddleware)
 	AddUserSessionControllerRoutes(&api, jwtUseCase, userService, userSessionUseCase, authMiddleware)
+
+	countryRepo := mysql_repo.NewCountryRepo(conn)
+	countryService := service.NewCountryService(countryRepo)
+	AddCountryControllerRoutes(&api, countryService)
+
+	officeRepo := mysql_repo.NewOfficeRepo(conn)
+	officeService := service.NewOfficeService(officeRepo)
+	AddOfficeControllerRoutes(&api, officeService)
 }
