@@ -68,6 +68,9 @@ func (repo UserSessionRepo) GetLastByUserId(user_id int) (*models.UserSession, e
 	if res.Error != nil {
 		return nil, res.Error
 	}
+	if res.RowsAffected == 0 {
+		return nil, nil
+	}
 
 	return &user_session, res.Error
 }

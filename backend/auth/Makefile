@@ -3,13 +3,15 @@ dev: up
 
 migrate: up
 	go run ./cmd/migrator/migrator.go
+	make users
 
 users:
 	go run ./cmd/fixture/user_data.go
 create_migration:
 	migrate create -ext sql -dir ./storage/migrations/ -seq 
 
-test: up migrate
+# tests; before it run migrate
+test: up
 	.  tests/venv/bin/activate \
 	&& pytest -s
 
