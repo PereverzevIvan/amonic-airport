@@ -3,3 +3,4 @@ storage/database
 tests/venv
 tests/__pycache__
 tests/.pytest_cache
+.pytest_cache
