@@ -61,7 +61,7 @@ CREATE TABLE `offices` (
 
 LOCK TABLES `offices` WRITE;
 /*!40000 ALTER TABLE `offices` DISABLE KEYS */;
-INSERT INTO `offices` VALUES (1,185,'Abu dhabi','638-757-8582\r\n','MIchael Malki'),(3,52,'Cairo','252-224-8525','David Johns'),(4,13,'Bahrain','542-227-5825','Katie Ballmer'),(5,142,'Doha','758-278-9597','Ariel Levy'),(6,152,'Riyadh','285-285-1474','Andrew Hobart');
+INSERT INTO `offices` VALUES (1,185,'Abu dhabi','638-757-8582','MIchael Malki'),(3,52,'Cairo','252-224-8525','David Johns'),(4,13,'Bahrain','542-227-5825','Katie Ballmer'),(5,142,'Doha','758-278-9597','Ariel Levy'),(6,152,'Riyadh','285-285-1474','Andrew Hobart');
 /*!40000 ALTER TABLE `offices` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -100,7 +100,7 @@ CREATE TABLE `users` (
   `ID` int(11) NOT NULL,
   `RoleID` int(11) NOT NULL,
   `Email` varchar(150) COLLATE utf8_bin NOT NULL,
-  `Password` varchar(50) COLLATE utf8_bin NOT NULL,
+  `Password` varchar(150) COLLATE utf8_bin NOT NULL,
   `FirstName` varchar(50) COLLATE utf8_bin DEFAULT NULL,
   `LastName` varchar(50) COLLATE utf8_bin NOT NULL,
   `OfficeID` int(11) DEFAULT NULL,

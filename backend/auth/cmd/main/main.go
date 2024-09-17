@@ -10,6 +10,16 @@ import (
 	"github.com/gofiber/fiber/v3/log"
 )
 
+// @title Fiber Example API
+// @version 1.0
+// @description This is a sample swagger for Fiber
+// @termsOfService http://swagger.io/terms/
+// @contact.name API Support
+// @contact.email fiber@swagger.io
+// @license.name Apache 2.0
+// @license.url http://www.apache.org/licenses/LICENSE-2.0.html
+// @host localhost:3000
+// @BasePath /api
 func main() {
 	cfg := config.MustLoadConfig()
 	fmt.Println(cfg)
@@ -18,10 +28,8 @@ func main() {
 	fmt.Println(conn)
 
 	app := fiber.New()
-	app.Get("/api/hello", func(ctx fiber.Ctx) error {
-		return ctx.SendString("hello")
-	})
 
 	controllers.InitControllers(app, conn.Conn, &cfg.ConfigJWT)
+
 	log.Info(app.Listen(fmt.Sprintf(":%d", cfg.ConfigServer.Port)))
 }
