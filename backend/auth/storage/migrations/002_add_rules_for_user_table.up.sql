@@ -2,9 +2,6 @@ use `airplanes`;
 
 ALTER TABLE `users` 
   modify column ID INT AUTO_INCREMENT,
-  modify email VARCHAR(255) NOT NULL UNIQUE;
-
-ALTER TABLE `users`
-  ADD UNIQUE(`Email`);
+  modify column Email VARCHAR(255) COLLATE utf8_bin NOT NULL UNIQUE;
 
 

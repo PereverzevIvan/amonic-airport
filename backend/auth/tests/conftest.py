@@ -7,13 +7,16 @@ import logging
 from pytest_mysql import factories
 
 # Для вывода сообщений об ошибке со значениями
-pytest.register_assert_rewrite('tests.utils')
+pytest.register_assert_rewrite("tests.utils")
 
 
 @pytest.fixture(scope="session")
 def logger():
-    logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+    logging.basicConfig(
+        level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+    )
     yield logging.getLogger(__name__)
+
 
 # Создание фикстуры для процесса MySQL
 mysql_proc = factories.mysql_proc(port=3306)
@@ -21,9 +24,11 @@ mysql_proc = factories.mysql_proc(port=3306)
 # Создание клиентской фикстуры для подключения к MySQL
 mysql_client = factories.mysql(mysql_proc)
 
+
 @pytest.fixture(scope="session")
 def mysql_clear():
     pass
+
 
 @pytest.fixture(scope="session")
 def mysql_connection(mysql_client):
@@ -33,21 +38,21 @@ def mysql_connection(mysql_client):
     # Код для очистки или закрытия соединения, если требуется
 
 
-# Заполнение БД тестовыми данными из mysql_data.sql 
+# Заполнение БД тестовыми данными из mysql_data.sql
 @pytest.fixture(scope="session")
 def mysql_fill_data(mysql_connection):
     """Заполнение БД тестовыми данными из mysql_data.sql."""
-    
-    mysql_connection.execute_file('mysql_data.sql')
 
+    mysql_connection.execute_file("mysql_data.sql")
 
 
 ### API
 
+
 @pytest.fixture(scope="session")
 def api_url():
     """Фикстура для отправки запросов на http://localhost:3000/."""
-    
+
     base_url = "http://localhost:3000/api"
     return base_url
 

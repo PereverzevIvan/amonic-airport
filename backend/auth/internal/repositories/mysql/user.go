@@ -53,7 +53,7 @@ func (u UserRepo) GetByID(user_id int) (*models.User, error) {
 
 func (u UserRepo) GetByEmail(email string) (*models.User, error) {
 	var user models.User
-	err := u.Conn.Find(&user, "email = ?", email).Error
+	err := u.Conn.Find(&user, "Email = ?", email).Error
 	if err != nil {
 		return nil, err
 	}

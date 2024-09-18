@@ -20,7 +20,6 @@ func AddOfficeControllerRoutes(router *fiber.Router, s OfficeService) {
 	controller := OfficeController{OfficeService: s}
 
 	api.Get("/:id", controller.GetByID)
-	api.Get("/title/:title", controller.GetByTitle)
 }
 
 // Get Office By ID

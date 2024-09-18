@@ -26,7 +26,7 @@ func (repo UserSessionRepo) GetByUserId(user_id int, params *models.UserSessionP
 
 	res := repo.Conn.
 		Scopes(
-			ScopePaginate(params),
+			ScopePaginate(&params.PaginateParams),
 			ScopeUserSessionParams(params),
 		).
 		Model(&models.UserSession{}).
@@ -49,8 +49,8 @@ func ScopeUserSessionParams(params *models.UserSessionParams) func(db *gorm.DB) 
 
 		res := db.Where("user_id = ?", params.UserID)
 
-		if params.OnlyInvalidSessions {
-			res = res.Where("invalid_logout_reason = ?", models.KInvalidLogoutReasonUndefined)
+		if params.OnlyUnmarkedInvalidSessions {
+			res = res.Where("crash_reason_type = ?", models.KCrashReasonUndefined)
 		}
 
 		return res

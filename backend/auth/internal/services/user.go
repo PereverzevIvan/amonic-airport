@@ -1,19 +1,18 @@
 package service
 
 import (
+	"fmt"
+
 	"gitflic.ru/project/pereverzevivan/biznes-processy-laba-1/backend/models"
 	"golang.org/x/crypto/bcrypt"
-	// "github.com/gofiber/fiber/v3/log"
 )
 
 type UserRepo interface {
 	GetByID(user_id int) (*models.User, error)
 	GetByEmail(email string) (*models.User, error)
 	IsAdmin(user_id int) (bool, error)
-	// GetByEmail(user_email string) (models.User, error)
 	Create(*models.User) error
 	IsActive(user_id int) (bool, error)
-	// Create(*models.User) error
 	// Update(*models.User) error
 	// Delete(user_id int) error
 }
@@ -31,7 +30,12 @@ func NewUserService(ur UserRepo) UserService {
 }
 
 func (us UserService) IsPasswordCorrect(user *models.User, password string) bool {
-	return user.Password == password
+	hash_byte := []byte(user.Password)
+
+	fmt.Println(user)
+
+	err := bcrypt.CompareHashAndPassword(hash_byte, []byte(password))
+	return err == nil
 }
 
 func (us UserService) GetByID(user_id int) (*models.User, error) {
@@ -61,11 +65,20 @@ func (us UserService) IsAdmin(user_id int) (bool, error) {
 }
 
 func (us UserService) Create(user *models.User) error {
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+	hashedPassword, err := HashPassword(user.Password)
 	if err != nil {
 		return err
 	}
 
 	user.Password = string(hashedPassword)
 	return us.userRepo.Create(user)
+}
+
+func HashPassword(password string) ([]byte, error) {
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err != nil {
+		return []byte{}, err
+	}
+
+	return hashedPassword, nil
 }

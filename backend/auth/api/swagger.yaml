@@ -1,5 +1,24 @@
+components:
+  securitySchemes:
+    cookieAuth:         # arbitrary name for the security scheme; will be used in the "security" key later
+      type: apiKey
+      in: cookie
+      name: access-token  # cookie name
+
+
+
+
 basePath: /api
 definitions:
+  controllers.LoginRequest:
+    properties:
+      email:
+        example: j.doe@amonic.com
+        type: string
+      password:
+        example: "123"
+        type: string
+    type: object
   models.Country:
     properties:
       id:
@@ -37,6 +56,21 @@ definitions:
       office_id:
         type: integer
       role_id:
+        type: integer
+    type: object
+  models.UserSession:
+    properties:
+      crash_reason_type:
+        type: integer
+      id:
+        type: integer
+      invalid_logout_reason:
+        type: string
+      login_at:
+        type: string
+      logout_at:
+        type: string
+      user_id:
         type: integer
     type: object
 host: localhost:3000
@@ -79,6 +113,77 @@ paths:
       summary: Get Country by id
       tags:
       - Country
+  /login:
+    post:
+      security:
+        - cookieAuth: []
+      consumes:
+      - application/json
+      description: |-
+        Вход пользователя по адресу электронной почты и паролю.
+        Возвращает токены для авторизации в куках.
+      parameters:
+      - description: Login params
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/controllers.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: login success
+          headers:
+            Set-Cookie:
+              schema:
+                  type: string
+                  example: access-token=abcde12345; Path=/; HttpOnly
+        "400":
+          description: Bad Request
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: User login
+      tags:
+      - Auth
+  /logout:
+    security:
+        - cookieAuth: []
+    post:
+      consumes:
+      - application/json
+      description: Выход пользователя из системы.
+      parameters:
+      - description: Login params
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/controllers.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: login success
+        "400":
+          description: Bad Request
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: User Logout
+      tags:
+      - Auth
   /office/{id}:
     get:
       consumes:
@@ -106,15 +211,62 @@ paths:
       summary: Get Office by ID
       tags:
       - Office
-  /user/:
+  /user-sessions/:
+    get:
+      consumes:
+      - application/json
+      description: Получить список сессий пользователя по его ID
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Get only invalid sessions of user
+        in: query
+        name: only_invalid_sessions
+        type: boolean
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Limit of records in page
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.UserSession'
+            type: array
+        "400":
+          description: Bad Request
+          schema: {}
+        "403":
+          description: Forbidden
+          schema: {}
+        "404":
+          description: Not Found
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Get user sessions
+      tags:
+      - User sessions
+  /user/{id}:
     get:
       consumes:
       - application/json
       description: Получение информации о пользователе по его идентификатору
       parameters:
       - description: User ID
-        in: query
-        name: user_id
+        in: path
+        name: id
         required: true
         type: integer
       produces:

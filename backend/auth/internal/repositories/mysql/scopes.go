@@ -5,14 +5,17 @@ import (
 	"gorm.io/gorm"
 )
 
-func ScopePaginate(params *models.UserSessionParams) func(db *gorm.DB) *gorm.DB {
+func ScopePaginate(params *models.PaginateParams) func(db *gorm.DB) *gorm.DB {
 	return func(db *gorm.DB) *gorm.DB {
 		if params == nil {
 			return db
 		}
 
+		limit := min(max(params.Limit, 3), models.KMaxLimit)
+		page := max(params.Page-1, 0)
+
 		return db.
-			Offset((params.Page - 1) * params.Limit).
-			Limit(params.Limit)
+			Offset(page * limit).
+			Limit(limit)
 	}
 }

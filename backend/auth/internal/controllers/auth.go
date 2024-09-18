@@ -42,6 +42,28 @@ func AddAuthControllerRoutes(
 //  1. Если выхода не было -> изменить запись добавив причину 'Не указано'
 //
 // 6. Записать новую сессию
+
+type LoginRequest struct {
+	Email    string `json:"email" example:"j.doe@amonic.com"`
+	Password string `json:"password" example:"123"`
+}
+
+// @Summary      User login
+// @Description  Вход пользователя по адресу электронной почты и паролю.
+// @Description  Возвращает токены для авторизации в куках.
+// @Tags         Auth
+// @Accept       json
+// @Produce      json
+// @Param        request body LoginRequest true "Login params"
+// @Success      200 "login success"
+// @Header       200 {string} Set-Cookie "access-token=abc123; HttpOnly; Secure; Path=/; SameSite=Strict"
+// @Header       200 {string} Set-Cookie "refresh-token=xyz789; HttpOnly; Secure; Path=/; SameSite=Strict"
+// @Failure      400
+// @Failure      401
+// @Failure      403
+// @Failure      404
+// @Failure      500
+// @Router       /login [post]
 func (ac *AuthController) Login(ctx fiber.Ctx) error {
 	body := map[string]string{}
 	err := ctx.Bind().Body(&body)
@@ -119,6 +141,19 @@ func (ac *AuthController) Refresh(ctx fiber.Ctx) error {
 	return ctx.SendStatus(http.StatusOK)
 }
 
+// @Summary      User Logout
+// @Description  Выход пользователя из системы.
+// @Tags         Auth
+// @Accept       json
+// @Produce      json
+// @Param        request body LoginRequest true "Login params"
+// @Success      201 "login success"
+// @Failure      400
+// @Failure      401
+// @Failure      403
+// @Failure      404
+// @Failure      500
+// @Router       /logout [post]
 func (ac *AuthController) Logout(ctx fiber.Ctx) error {
 	user_id, err := ac.jwtUseCase.GetUserIdFromToken(ctx, true)
 	if err != nil {

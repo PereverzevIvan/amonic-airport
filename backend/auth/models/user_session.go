@@ -27,8 +27,8 @@ const (
 
 type UserSessionParams struct {
 	PaginateParams
-	Page                int  `json:"page"`
-	Limit               int  `json:"limit"`
-	UserID              int  `json:"user_id"`
-	OnlyInvalidSessions bool `json:"only_invalid_sessions"`
+	// Page                        int  `json:"page"`
+	// Limit                       int  `json:"limit"`
+	UserID                      int  `json:"user_id"`
+	OnlyUnmarkedInvalidSessions bool `json:"only_unmarked_invalid_sessions"`
 }
