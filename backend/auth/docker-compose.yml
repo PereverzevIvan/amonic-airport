@@ -1,4 +1,25 @@
 services:
+  golang:
+    build: .
+    container_name: golang_project # Название контейнера
+    ports:
+      - "3000:3000"  # Пробрасываем порт наружу
+    volumes:
+      - .:/app  # Примонтируем текущую директорию внутрь контейнера
+    # command: ["./cmd/main/main.out"]  # Указываем команду для запуска приложения
+    depends_on:
+      - mysql
+        # condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:3000"]  # Проверка работоспособности
+      interval: 30s  # Проверка каждые 30 секунд
+      timeout: 5s  # Таймаут проверки 5 секунд
+      retries: 3  # После 3 неудачных попыток контейнер будет перезапущен
+      start_period: 10s  # Задержка перед началом первой проверки
+    restart: on-failure
+    networks:
+      - database
+
   mysql:
     image: mysql:8.0
     container_name: auth_database
@@ -12,6 +33,11 @@ services:
       - 3306:3306
     volumes:
       - ./storage/database/:/var/lib/mysql/
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "admin", "-padmin"]
+      interval: 10s   # Интервал между проверками
+      timeout: 5s     # Таймаут выполнения команды
+      retries: 5      # Количество неудачных проверок перед пометкой как "unhealthy"
     networks:
       - database
 

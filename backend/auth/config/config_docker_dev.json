@@ -4,7 +4,7 @@
   },
   "database": {
     "db_type": "mysql",
-    "host": "localhost",
+    "host": "mysql",
     "db_port": 3306,
     "db_name": "airplanes",
     "admin_name": "admin",
