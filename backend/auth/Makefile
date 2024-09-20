@@ -4,10 +4,10 @@
 init_db: migrate users
 	
 migrate: 
-	docker run --rm -v .:/code -w /app golang:latest go run ./cmd/migrator/migrator.go
+	docker run --rm --network auth_database -v ./:/code -w /code golang:latest go run ./cmd/migrator/migrator.go --config=./config/config_docker_dev.json
 
 users:
-	docker run --rm -v .:/code -w /app golang:latest go run ./cmd/fixture/user_data.go
+	docker run --rm --network auth_database -v ./:/code -w /code golang:latest go run ./cmd/fixture/user_data.go --config=./config/config_docker_dev.json
 
 # tests; before it run migrate
 test: up
