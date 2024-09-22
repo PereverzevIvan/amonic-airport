@@ -43,9 +43,9 @@ func (usecase JWTUseCase) RefreshTokens(ctx fiber.Ctx, user *models.User) error 
 	}
 
 	ctx.Cookie(&fiber.Cookie{
-		Name:  "access-token",
-		Value: access_token,
-		// Secure:   true,
+		Name:     "access-token",
+		Value:    access_token,
+		Secure:   false, // В продакшене должно быть true
 		SameSite: "Lax",
 		Expires:  time.Now().Add(usecase.jwtService.GetAccessTokenExpiration()),
 	})
@@ -54,7 +54,7 @@ func (usecase JWTUseCase) RefreshTokens(ctx fiber.Ctx, user *models.User) error 
 		Name:     "refresh-token",
 		Value:    refresh_token,
 		HTTPOnly: true,
-		// Secure:   true,
+		Secure:   false, // В продакшене должно быть true
 		SameSite: "Lax",
 		Expires:  time.Now().Add(usecase.jwtService.GetRefreshTokenExpiration()),
 	})

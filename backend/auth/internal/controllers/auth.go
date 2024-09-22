@@ -56,8 +56,6 @@ type LoginRequest struct {
 // @Produce      json
 // @Param        request body LoginRequest true "Login params"
 // @Success      200 "login success"
-// @Header       200 {string} Set-Cookie "access-token=abc123; HttpOnly; Secure; Path=/; SameSite=Strict"
-// @Header       200 {string} Set-Cookie "refresh-token=xyz789; HttpOnly; Secure; Path=/; SameSite=Strict"
 // @Failure      400
 // @Failure      401
 // @Failure      403
@@ -146,14 +144,13 @@ func (ac *AuthController) Refresh(ctx fiber.Ctx) error {
 // @Tags         Auth
 // @Accept       json
 // @Produce      json
-// @Param        request body LoginRequest true "Login params"
-// @Success      201 "login success"
+// @Success      200 "logout success"
 // @Failure      400
 // @Failure      401
 // @Failure      403
 // @Failure      404
 // @Failure      500
-// @Router       /logout [post]
+// @Router       /logout [get]
 func (ac *AuthController) Logout(ctx fiber.Ctx) error {
 	user_id, err := ac.jwtUseCase.GetUserIdFromToken(ctx, true)
 	if err != nil {

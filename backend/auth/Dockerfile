@@ -20,4 +20,5 @@ RUN go mod tidy
 
 # Указываем команду, которая будет выполняться при запуске контейнера
 CMD ["go", "run", "./cmd/main/main.go", "--config=./config/config_docker_dev.json"]
+# CMD ["go", "run", "./cmd/main/main.go", "--config=./config/config_dev.json"]
 
