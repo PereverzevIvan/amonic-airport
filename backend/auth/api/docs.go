@@ -9,11 +9,7 @@ const docTemplate = `{
     "info": {
         "description": "{{escape .Description}}",
         "title": "{{.Title}}",
-        "termsOfService": "http://swagger.io/terms/",
-        "contact": {
-            "name": "API Support",
-            "email": "fiber@swagger.io"
-        },
+        "contact": {},
         "license": {
             "name": "Apache 2.0",
             "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
@@ -89,13 +85,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "login success",
-                        "headers": {
-                            "Set-Cookie": {
-                                "type": "string",
-                                "description": "refresh-token=xyz789; HttpOnly; Secure; Path=/; SameSite=Strict"
-                            }
-                        }
+                        "description": "login success"
                     },
                     "400": {
                         "description": "Bad Request"
@@ -116,7 +106,7 @@ const docTemplate = `{
             }
         },
         "/logout": {
-            "post": {
+            "get": {
                 "description": "Выход пользователя из системы.",
                 "consumes": [
                     "application/json"
@@ -128,20 +118,9 @@ const docTemplate = `{
                     "Auth"
                 ],
                 "summary": "User Logout",
-                "parameters": [
-                    {
-                        "description": "Login params",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/controllers.LoginRequest"
-                        }
-                    }
-                ],
                 "responses": {
-                    "201": {
-                        "description": "login success"
+                    "200": {
+                        "description": "logout success"
                     },
                     "400": {
                         "description": "Bad Request"
@@ -272,6 +251,11 @@ const docTemplate = `{
         },
         "/user/{id}": {
             "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Получение информации о пользователе по его идентификатору",
                 "consumes": [
                     "application/json"
@@ -408,6 +392,13 @@ const docTemplate = `{
                 }
             }
         }
+    },
+    "securityDefinitions": {
+        "ApiKeyAuth": {
+            "type": "apiKey",
+            "name": "access-token",
+            "in": "cookie"
+        }
     }
 }`
 
@@ -417,8 +408,8 @@ var SwaggerInfo = &swag.Spec{
 	Host:             "localhost:3000",
 	BasePath:         "/api",
 	Schemes:          []string{},
-	Title:            "Fiber Example API",
-	Description:      "This is a sample swagger for Fiber",
+	Title:            "Разработка бизнес-приложений - лаба 1",
+	Description:      "Это API лабораторной работы 1 по дисциплине \"Разработка бизнес-приложений\".\nТема проекта - аэропорт.",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",

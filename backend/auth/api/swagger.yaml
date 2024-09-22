@@ -1,13 +1,3 @@
-components:
-  securitySchemes:
-    cookieAuth:         # arbitrary name for the security scheme; will be used in the "security" key later
-      type: apiKey
-      in: cookie
-      name: access-token  # cookie name
-
-
-
-
 basePath: /api
 definitions:
   controllers.LoginRequest:
@@ -75,15 +65,14 @@ definitions:
     type: object
 host: localhost:3000
 info:
-  contact:
-    email: fiber@swagger.io
-    name: API Support
-  description: This is a sample swagger for Fiber
+  contact: {}
+  description: |-
+    Это API лабораторной работы 1 по дисциплине "Разработка бизнес-приложений".
+    Тема проекта - аэропорт.
   license:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
-  termsOfService: http://swagger.io/terms/
-  title: Fiber Example API
+  title: Разработка бизнес-приложений - лаба 1
   version: "1.0"
 paths:
   /country/{id}:
@@ -115,8 +104,6 @@ paths:
       - Country
   /login:
     post:
-      security:
-        - cookieAuth: []
       consumes:
       - application/json
       description: |-
@@ -134,11 +121,6 @@ paths:
       responses:
         "200":
           description: login success
-          headers:
-            Set-Cookie:
-              schema:
-                  type: string
-                  example: access-token=abcde12345; Path=/; HttpOnly
         "400":
           description: Bad Request
         "401":
@@ -153,24 +135,15 @@ paths:
       tags:
       - Auth
   /logout:
-    security:
-        - cookieAuth: []
-    post:
+    get:
       consumes:
       - application/json
       description: Выход пользователя из системы.
-      parameters:
-      - description: Login params
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/controllers.LoginRequest'
       produces:
       - application/json
       responses:
-        "201":
-          description: login success
+        "200":
+          description: logout success
         "400":
           description: Bad Request
         "401":
@@ -282,7 +255,14 @@ paths:
         "404":
           description: Not Found
           schema: {}
+      security:
+      - ApiKeyAuth: []
       summary: Get user by ID
       tags:
       - Users
+securityDefinitions:
+  ApiKeyAuth:
+    in: cookie
+    name: access-token
+    type: apiKey
 swagger: "2.0"

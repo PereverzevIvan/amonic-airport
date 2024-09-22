@@ -11,7 +11,7 @@ type UserController struct {
 func AddUserControllerRoutes(api *fiber.Router, userService userService, authMiddleware AuthMiddleware) {
 	controller := &UserController{userService: userService}
 
-	(*api).Get("user/:id", controller.GetByID, authMiddleware.IsAdmin)
+	(*api).Get("user/:id", controller.GetByID)
 }
 
 // Get User By ID
@@ -25,6 +25,7 @@ func AddUserControllerRoutes(api *fiber.Router, userService userService, authMid
 // @Failure      400  {object}  error
 // @Failure      404  {object}  error
 // @Router       /user/{id} [get]
+// @Security ApiKeyAuth
 func (uc *UserController) GetByID(ctx fiber.Ctx) error {
 	user_id := fiber.Params[int](ctx, "id")
 
