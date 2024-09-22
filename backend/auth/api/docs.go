@@ -61,7 +61,7 @@ const docTemplate = `{
         },
         "/login": {
             "post": {
-                "description": "Вход пользователя по адресу электронной почты и паролю.\nВозвращает токены для авторизации в куках.",
+                "description": "Вход пользователя по адресу электронной почты и паролю.\nВозвращает два токена для авторизации в куках.\nНазвание кук: \"access-token\" и \"refresh-token\"",
                 "consumes": [
                     "application/json"
                 ],
@@ -107,13 +107,7 @@ const docTemplate = `{
         },
         "/logout": {
             "get": {
-                "description": "Выход пользователя из системы.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
+                "description": "Выход пользователя из системы",
                 "tags": [
                     "Auth"
                 ],
@@ -170,12 +164,62 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
-                        "schema": {}
+                        "description": "Bad Request"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/offices": {
+            "get": {
+                "description": "Получение информации о всех офисах",
+                "tags": [
+                    "Office"
+                ],
+                "summary": "Get all offices",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Office"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/refresh": {
+            "get": {
+                "description": "Получить новую пару",
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Refresh token",
+                "responses": {
+                    "200": {
+                        "description": "refresh success"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
                     },
                     "404": {
-                        "description": "Not Found",
-                        "schema": {}
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
                     }
                 }
             }
@@ -247,15 +291,53 @@ const docTemplate = `{
                         "schema": {}
                     }
                 }
+            },
+            "patch": {
+                "description": "Установка причины неудачного выхода из системы",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User sessions"
+                ],
+                "summary": "Set Unsuccessfull Logout Reason",
+                "parameters": [
+                    {
+                        "description": "Информация о сессии",
+                        "name": "session_data",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/models.UserSession"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
             }
         },
         "/user/{id}": {
             "get": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
                 "description": "Получение информации о пользователе по его идентификатору",
                 "consumes": [
                     "application/json"
@@ -284,12 +366,47 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
-                        "schema": {}
+                        "description": "Bad Request"
                     },
                     "404": {
-                        "description": "Not Found",
-                        "schema": {}
+                        "description": "Not Found"
+                    }
+                }
+            }
+        },
+        "/users": {
+            "get": {
+                "description": "Получение информации о всех пользователях",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Get all users",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Фильтр по id офиса",
+                        "name": "office_id",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.User"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
                     }
                 }
             }
@@ -326,7 +443,7 @@ const docTemplate = `{
                 "contact": {
                     "type": "string"
                 },
-                "countryID": {
+                "country_id": {
                     "type": "integer"
                 },
                 "id": {

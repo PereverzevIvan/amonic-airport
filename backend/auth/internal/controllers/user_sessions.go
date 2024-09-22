@@ -108,6 +108,19 @@ func (controller *UserSessionController) UserSessions(ctx fiber.Ctx) error {
 }
 
 // Установка причины неудачного выхода из системы
+// @Summary      Set Unsuccessfull Logout Reason
+// @Description  Установка причины неудачного выхода из системы
+// @Tags         User sessions
+// @Accept       json
+// @Produce      json
+// @Param        session_data body models.UserSession false "Информация о сессии"
+// @Success      200
+// @Failure      400
+// @Failure      401
+// @Failure      403
+// @Failure      404
+// @Failure      500
+// @Router       /user-sessions/ [patch]
 func (controller *UserSessionController) SetUnsuccessfullLogoutReason(ctx fiber.Ctx) error {
 	// Получаем user_id и затем пользователя
 	user_id, err := controller.jwtUseCase.GetUserIdFromToken(ctx, false)

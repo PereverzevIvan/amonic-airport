@@ -1,6 +1,8 @@
 package controllers
 
 import (
+	"net/http"
+
 	"gitflic.ru/project/pereverzevivan/biznes-processy-laba-1/backend/models"
 	"github.com/gofiber/fiber/v3"
 )
@@ -8,6 +10,7 @@ import (
 type OfficeService interface {
 	GetByID(id int) (*models.Office, error)
 	GetByTitle(title string) (*models.Office, error)
+	GetAll() (*[]models.Office, error)
 }
 
 type OfficeController struct {
@@ -15,11 +18,10 @@ type OfficeController struct {
 }
 
 func AddOfficeControllerRoutes(router *fiber.Router, s OfficeService) {
-	api := (*router).Group("/office")
-
 	controller := OfficeController{OfficeService: s}
 
-	api.Get("/:id", controller.GetByID)
+	(*router).Get("/office/:id", controller.GetByID)
+	(*router).Get("/offices", controller.GetAll)
 }
 
 // Get Office By ID
@@ -30,20 +32,35 @@ func AddOfficeControllerRoutes(router *fiber.Router, s OfficeService) {
 // @Produce      json
 // @Param        id path  int  true  "Office ID"
 // @Success      200  {object}  models.Office
-// @Failure      400  {object}  error
-// @Failure      404  {object}  error
+// @Failure      400
+// @Failure      500
 // @Router       /office/{id} [get]
 func (con OfficeController) GetByID(c fiber.Ctx) error {
 	id := fiber.Params(c, "id", 0)
 	if id < 1 {
-		c.Status(fiber.StatusBadRequest).SendString("Неверный id")
+		c.Status(http.StatusBadRequest).SendString("Неверный id")
 	}
 
 	office, err := con.OfficeService.GetByID(id)
 	if err != nil {
 		// TODO: Добавить обработку разных ошибок
-		return c.Status(fiber.StatusNotFound).SendString("Не удалось получить офис")
+		return c.SendStatus(http.StatusInternalServerError)
 	}
 
-	return c.Status(fiber.StatusOK).JSON(office)
+	return c.Status(http.StatusOK).JSON(office)
+}
+
+// @Summary      Get all offices
+// @Description  Получение информации о всех офисах
+// @Tags         Office
+// @Success      200  {object}  []models.Office
+// @Failure      500
+// @Router       /offices [get]
+func (con OfficeController) GetAll(c fiber.Ctx) error {
+	offices, err := con.OfficeService.GetAll()
+	if err != nil {
+		return c.SendStatus(http.StatusInternalServerError)
+	}
+
+	return c.Status(http.StatusOK).JSON(offices)
 }

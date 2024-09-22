@@ -10,6 +10,7 @@ import (
 type UserRepo interface {
 	GetByID(user_id int) (*models.User, error)
 	GetByEmail(email string) (*models.User, error)
+	GetAll(params map[string]string) (*[]models.User, error)
 	IsAdmin(user_id int) (bool, error)
 	Create(*models.User) error
 	IsActive(user_id int) (bool, error)
@@ -72,6 +73,11 @@ func (us UserService) Create(user *models.User) error {
 
 	user.Password = string(hashedPassword)
 	return us.userRepo.Create(user)
+}
+
+func (us UserService) GetAll(params map[string]string) (*[]models.User, error) {
+	users, err := us.userRepo.GetAll(params)
+	return users, err
 }
 
 func HashPassword(password string) ([]byte, error) {
