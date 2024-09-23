@@ -32,3 +32,14 @@ func (r OfficeRepo) GetByTitle(title string) (*models.Office, error) {
 
 	return &office, nil
 }
+
+func (r OfficeRepo) GetAll() (*[]models.Office, error) {
+	var offices []models.Office
+
+	err := r.Conn.Find(&offices).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return &offices, nil
+}

@@ -14,6 +14,11 @@ type AuthController struct {
 	userSessionUseCase userSessionUseCase
 }
 
+type LoginRequest struct {
+	Email    string `json:"email" example:"j.doe@amonic.com"`
+	Password string `json:"password" example:"123"`
+}
+
 func AddAuthControllerRoutes(
 	api *fiber.Router,
 	jwtUseCase jwtUseCase,
@@ -40,17 +45,12 @@ func AddAuthControllerRoutes(
 // 4. Запись новых токенов в куки
 // 5. Проверить корректность предыдущего выхода из системы
 //  1. Если выхода не было -> изменить запись добавив причину 'Не указано'
-//
 // 6. Записать новую сессию
-
-type LoginRequest struct {
-	Email    string `json:"email" example:"j.doe@amonic.com"`
-	Password string `json:"password" example:"123"`
-}
 
 // @Summary      User login
 // @Description  Вход пользователя по адресу электронной почты и паролю.
-// @Description  Возвращает токены для авторизации в куках.
+// @Description  Возвращает два токена для авторизации в куках.
+// @Description  Название кук: "access-token" и "refresh-token"
 // @Tags         Auth
 // @Accept       json
 // @Produce      json
@@ -66,28 +66,25 @@ func (ac *AuthController) Login(ctx fiber.Ctx) error {
 	body := map[string]string{}
 	err := ctx.Bind().Body(&body)
 	if err != nil {
-		ctx.SendStatus(http.StatusBadRequest)
-		return ctx.SendString("body is required")
+		return ctx.Status(http.StatusBadRequest).SendString("body is required")
 	}
 
 	// получение email и пароля
 	email, hasEmail := body["email"]
 	if !hasEmail || (email == "") {
-		ctx.SendStatus(http.StatusBadRequest)
-		return ctx.SendString("email is required")
+		return ctx.Status(http.StatusBadRequest).SendString("email is required")
 	}
 
 	password, hasPassword := body["password"]
 	if !hasPassword || (password == "") {
-		ctx.SendStatus(http.StatusBadRequest)
-		return ctx.SendString("password is required")
+		return ctx.Status(http.StatusBadRequest).SendString("password is required")
 	}
 
 	// Получение пользователя и проверка пароля
 	user, err := ac.userService.GetByEmail(email)
 	if err != nil {
 		log.Error(err)
-		return ctx.SendStatus(http.StatusInternalServerError)
+		return ctx.Status(http.StatusInternalServerError).SendString("Wrong email or password")
 	}
 
 	if user == nil || !ac.userService.IsPasswordCorrect(user, password) {
@@ -103,7 +100,7 @@ func (ac *AuthController) Login(ctx fiber.Ctx) error {
 
 	// Проверить последнюю сессию, если не было выхода
 	// и crashReasonType не установлен -> обновить эту невалидную сессию,
-	// установив crashReason = 0 и KDefaultInvalidaSessionReason
+	// установив crashReason = 0 и KDefaultInvalidSessionReason
 	err = ac.userSessionUseCase.UpdateNoLogoutSession(ctx, user.ID)
 	if err != nil {
 		return utils.LogErrorIfNotEmpty(err)
@@ -118,6 +115,16 @@ func (ac *AuthController) Login(ctx fiber.Ctx) error {
 	return ctx.SendString("login success")
 }
 
+// @Summary      Refresh token
+// @Description  Получить новую пару
+// @Tags         Auth
+// @Success      200 "refresh success"
+// @Failure      400
+// @Failure      401
+// @Failure      403
+// @Failure      404
+// @Failure      500
+// @Router       /refresh [get]
 func (ac *AuthController) Refresh(ctx fiber.Ctx) error {
 	user_id, err := ac.jwtUseCase.GetUserIdFromToken(ctx, true)
 	if err != nil {
@@ -140,10 +147,8 @@ func (ac *AuthController) Refresh(ctx fiber.Ctx) error {
 }
 
 // @Summary      User Logout
-// @Description  Выход пользователя из системы.
+// @Description  Выход пользователя из системы
 // @Tags         Auth
-// @Accept       json
-// @Produce      json
 // @Success      200 "logout success"
 // @Failure      400
 // @Failure      401

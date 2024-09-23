@@ -20,7 +20,7 @@ definitions:
     properties:
       contact:
         type: string
-      countryID:
+      country_id:
         type: integer
       id:
         type: integer
@@ -108,7 +108,8 @@ paths:
       - application/json
       description: |-
         Вход пользователя по адресу электронной почты и паролю.
-        Возвращает токены для авторизации в куках.
+        Возвращает два токена для авторизации в куках.
+        Название кук: "access-token" и "refresh-token"
       parameters:
       - description: Login params
         in: body
@@ -136,11 +137,7 @@ paths:
       - Auth
   /logout:
     get:
-      consumes:
-      - application/json
-      description: Выход пользователя из системы.
-      produces:
-      - application/json
+      description: Выход пользователя из системы
       responses:
         "200":
           description: logout success
@@ -177,13 +174,45 @@ paths:
             $ref: '#/definitions/models.Office'
         "400":
           description: Bad Request
-          schema: {}
-        "404":
-          description: Not Found
-          schema: {}
+        "500":
+          description: Internal Server Error
       summary: Get Office by ID
       tags:
       - Office
+  /offices:
+    get:
+      description: Получение информации о всех офисах
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Office'
+            type: array
+        "500":
+          description: Internal Server Error
+      summary: Get all offices
+      tags:
+      - Office
+  /refresh:
+    get:
+      description: Получить новую пару
+      responses:
+        "200":
+          description: refresh success
+        "400":
+          description: Bad Request
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Refresh token
+      tags:
+      - Auth
   /user-sessions/:
     get:
       consumes:
@@ -231,6 +260,34 @@ paths:
       summary: Get user sessions
       tags:
       - User sessions
+    patch:
+      consumes:
+      - application/json
+      description: Установка причины неудачного выхода из системы
+      parameters:
+      - description: Информация о сессии
+        in: body
+        name: session_data
+        schema:
+          $ref: '#/definitions/models.UserSession'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Set Unsuccessfull Logout Reason
+      tags:
+      - User sessions
   /user/{id}:
     get:
       consumes:
@@ -251,13 +308,33 @@ paths:
             $ref: '#/definitions/models.User'
         "400":
           description: Bad Request
-          schema: {}
         "404":
           description: Not Found
-          schema: {}
-      security:
-      - ApiKeyAuth: []
       summary: Get user by ID
+      tags:
+      - Users
+  /users:
+    get:
+      consumes:
+      - application/json
+      description: Получение информации о всех пользователях
+      parameters:
+      - description: Фильтр по id офиса
+        in: query
+        name: office_id
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.User'
+            type: array
+        "500":
+          description: Internal Server Error
+      summary: Get all users
       tags:
       - Users
 securityDefinitions:

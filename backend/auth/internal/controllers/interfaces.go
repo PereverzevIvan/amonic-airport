@@ -10,6 +10,7 @@ type userService interface {
 	GetByID(user_id int) (*models.User, error)
 	GetByEmail(email string) (*models.User, error)
 	IsPasswordCorrect(user *models.User, password string) bool
+	GetAll(params map[string]string) (*[]models.User, error)
 	IsActive(user_id int) (bool, error)
 	IsAdmin(user_id int) (bool, error)
 }

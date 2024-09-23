@@ -1,11 +1,11 @@
 package models
 
 type Office struct {
-	ID        int
-	CountryID int
-	Title     string
-	Phone     string
-	Contact   string
+	ID        int    `json:"id"`
+	CountryID int    `json:"country_id"`
+	Title     string `json:"title"`
+	Phone     string `json:"phone"`
+	Contact   string `json:"contact"`
 }
 
 func (Office) TableName() string {

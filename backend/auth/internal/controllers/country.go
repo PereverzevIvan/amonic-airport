@@ -15,11 +15,9 @@ type CountryController struct {
 }
 
 func AddCountryControllerRoutes(router *fiber.Router, s CountryService) {
-	api := (*router).Group("/country")
-
 	controller := CountryController{CountryService: s}
 
-	api.Get("/:id", controller.GetByID)
+	(*router).Get("/country/:id", controller.GetByID)
 }
 
 // Get Country By ID

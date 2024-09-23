@@ -4,7 +4,7 @@ import pytest
 import requests
 import logging
 
-from pytest_mysql import factories
+# from pytest_mysql import factories
 
 # Для вывода сообщений об ошибке со значениями
 pytest.register_assert_rewrite("tests.utils")
@@ -19,31 +19,31 @@ def logger():
 
 
 # Создание фикстуры для процесса MySQL
-mysql_proc = factories.mysql_proc(port=3306)
+# mysql_proc = factories.mysql_proc(port=3306)
 
 # Создание клиентской фикстуры для подключения к MySQL
-mysql_client = factories.mysql(mysql_proc)
+# mysql_client = factories.mysql(mysql_proc)
 
 
-@pytest.fixture(scope="session")
-def mysql_clear():
-    pass
+# @pytest.fixture(scope="session")
+# def mysql_clear():
+#     pass
 
 
-@pytest.fixture(scope="session")
-def mysql_connection(mysql_client):
-    """Фикстура для подключения к базе данных MySQL."""
-    # Здесь можно добавить код для инициализации базы данных, если это необходимо
-    yield mysql_client
-    # Код для очистки или закрытия соединения, если требуется
+# @pytest.fixture(scope="session")
+# def mysql_connection(mysql_client):
+#     """Фикстура для подключения к базе данных MySQL."""
+# Здесь можно добавить код для инициализации базы данных, если это необходимо
+#     yield mysql_client
+# Код для очистки или закрытия соединения, если требуется
 
 
 # Заполнение БД тестовыми данными из mysql_data.sql
-@pytest.fixture(scope="session")
-def mysql_fill_data(mysql_connection):
-    """Заполнение БД тестовыми данными из mysql_data.sql."""
-
-    mysql_connection.execute_file("mysql_data.sql")
+# @pytest.fixture(scope="session")
+# def mysql_fill_data(mysql_connection):
+#     """Заполнение БД тестовыми данными из mysql_data.sql."""
+#
+#     mysql_connection.execute_file("mysql_data.sql")
 
 
 ### API

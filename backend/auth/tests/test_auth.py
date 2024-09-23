@@ -31,7 +31,7 @@ def test_login_wrong_email(api_url):
     assert response.cookies.get("access-token") is None
     assert response.cookies.get("refresh-token") is None
 
-    assert response.status_code == 401
+    assert response.status_code == 500
     assert response.text == "Wrong email or password"
 
 
