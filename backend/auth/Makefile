@@ -1,4 +1,8 @@
 # Создать и запустить контейнеры со сборкой 
+dev:
+	docker compose up mysql phpmyadmin swagger-ui -d
+	go run ./cmd/main/main.go --config=./config/config_dev.json
+
 up:
 	docker compose up -d --build
 
