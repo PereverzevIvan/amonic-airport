@@ -2,4 +2,5 @@ storage/database/
 storage/database
 venv
 __pycache__
+tests/utils/__pycache__
 .pytest_cache

@@ -1,6 +1,8 @@
 package mysql_repo
 
 import (
+	"strings"
+
 	"gitflic.ru/project/pereverzevivan/biznes-processy-laba-1/backend/models"
 	"gorm.io/gorm"
 )
@@ -17,11 +19,41 @@ func NewUserRepo(conn *gorm.DB) UserRepo {
 
 func (r UserRepo) Create(user *models.User) error {
 	err := r.Conn.Create(user).Error
-	if err != nil {
-		return err
+	if IsUniqueConstraintError(err) {
+		return models.ErrDuplicatedEmail
 	}
 
-	return nil
+	if IsForeignKeyConstraintError(err) &&
+		strings.Contains(err.Error(), "`FK_Users_Offices` FOREIGN KEY (`OfficeID`) REFERENCES `offices` (`ID`))") {
+		return models.ErrFKOfficeIDNotFound
+	}
+
+	return err
+}
+
+func (r UserRepo) Update(user *models.User) error {
+
+	err := r.Conn.Model(&user).
+		Select("FirstName", "LastName", "Email", "RoleID", "OfficeID").
+		Updates(*user).Error
+
+	if IsUniqueConstraintError(err) {
+		return models.ErrDuplicatedEmail
+	}
+
+	if IsForeignKeyConstraintError(err) &&
+		strings.Contains(err.Error(), "`FK_Users_Offices` FOREIGN KEY (`OfficeID`) REFERENCES `offices` (`ID`))") {
+		return models.ErrFKOfficeIDNotFound
+	}
+
+	return err
+}
+
+func (r UserRepo) UpdateActive(user_id int, is_active bool) error {
+	err := r.Conn.Model(&models.User{ID: user_id}).
+		Update("Active", is_active).Error
+
+	return err
 }
 
 func (u UserRepo) GetByID(user_id int) (*models.User, error) {

@@ -5,7 +5,7 @@ import tests.utils.auth as auth
 
 
 def test_login(api_url):
-    user_auth = auth.Auth(api_url, auth.test_user)
+    user_auth = auth.Auth(api_url, auth.test_admin)
     user_auth.login_user()
 
 

@@ -9,7 +9,7 @@ import tests.utils.datetime_utils as datetime_utils
 def test_login_new_user_session(api_url):
     time_before_login = datetime_utils.now()
 
-    user_auth = auth.Auth(api_url, auth.test_user)
+    user_auth = auth.Auth(api_url, auth.test_admin)
     user_auth.login_user()
 
     time_after_login = datetime_utils.now(True)
@@ -29,7 +29,7 @@ def test_login_new_user_session(api_url):
 
 
 def test_logout_user_session(api_url):
-    user_auth = auth.Auth(api_url, auth.test_user)
+    user_auth = auth.Auth(api_url, auth.test_admin)
     user_auth.login_user()
 
     user_session_client = user_session.UserSessionClient(
@@ -60,7 +60,7 @@ def test_logout_user_session(api_url):
 
 
 def test_login_2_times_to_check_invalid_logout_marked(api_url):
-    user_auth = auth.Auth(api_url, auth.test_user)
+    user_auth = auth.Auth(api_url, auth.test_admin)
     # Авторизовываемся 2 раза,
     # чтобы предпоследняя сессия пометилась как невалидная
     user_auth.login_user()
@@ -88,9 +88,9 @@ def test_login_2_times_to_check_invalid_logout_marked(api_url):
 
 
 def test_update_invalid_logout_session(api_url):
-    user_auth = auth.Auth(api_url, auth.test_user)
+    user_auth = auth.Auth(api_url, auth.test_admin)
 
-    user_auth = auth.Auth(api_url, auth.test_user)
+    user_auth = auth.Auth(api_url, auth.test_admin)
     # Авторизовываемся 2 раза,
     # чтобы предпоследняя сессия пометилась как невалидная
     user_auth.login_user()

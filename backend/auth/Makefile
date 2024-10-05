@@ -23,13 +23,18 @@ restart:
 	docker compose restart
 
 # Заполнить базу данных тестовой информацией (нужно запускать только один раз, после создания контейнеров)
-init_db: migrate users
-	
+local-init-db: local-migrate local-users
+init-db: migrate users
+
 # Применить миграции к базе данных
+local-migrate:
+	go run ./cmd/migrator/migrator.go --config=./config/config_dev.json
 migrate: start
 	docker run --rm --network auth_database -v ./:/code -w /code golang:latest go run ./cmd/migrator/migrator.go --config=./config/config_docker_dev.json
 
 # Добавить в базу данных пользователей из csv файла
+local-users:
+	go run ./cmd/fixture/user_data.go --config=./config/config_dev.json
 users: start
 	docker run --rm --network auth_database -v ./:/code -w /code golang:latest go run ./cmd/fixture/user_data.go --config=./config/config_docker_dev.json
 

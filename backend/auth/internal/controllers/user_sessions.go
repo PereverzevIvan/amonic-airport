@@ -66,7 +66,6 @@ func (controller *UserSessionController) UserSessions(ctx fiber.Ctx) error {
 		params.UserID = token_user_id
 	}
 
-	// user_id := fiber.Query()[int](ctx, "id", token_user_id)
 	// Если user_id не равен token_user_id,
 	// то проверяем, является ли пользователь админом
 	if token_user_id != params.UserID {
@@ -83,20 +82,6 @@ func (controller *UserSessionController) UserSessions(ctx fiber.Ctx) error {
 		// 	return ctx.SendStatus(http.StatusForbidden)
 		// }
 	}
-
-	// only_invalid_sessions := fiber.Query[bool](ctx, "only_invalid_sessions", false)
-	// page := fiber.Query[int](ctx, "page", 1)
-	// limit := fiber.Query[int](ctx, "limit", 10)
-	//
-
-	//  params := models.UserSessionParams{
-	// 	UserID:              user_id,
-	// 	OnlyInvalidSessions: only_invalid_sessions,
-	// 	Page:                page,
-	// 	Limit:               limit,
-	// }
-
-	log.Info("params: ", params)
 
 	user_sessions, err := controller.userSessionUseCase.GetByUserID(ctx, params.UserID, &params)
 	if err != nil {

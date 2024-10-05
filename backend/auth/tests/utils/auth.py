@@ -2,7 +2,9 @@ import requests
 import jwt
 
 
-test_user = {"email": "j.doe@amonic.com", "password": "123"}
+test_admin = {"email": "j.doe@amonic.com", "password": "123"}
+
+test_user = {"email": "k.omar@amonic.com", "password": "4258"}
 
 test_user_wrong_password = {"email": "j.doe@amonic.com", "password": "1234"}
 
@@ -12,7 +14,7 @@ response_text_invalid_token_version = "invalid token version"
 
 
 class Auth:
-    user_to_login = test_user
+    user_to_login = test_admin
     access_token = ""
     refresh_token = ""
     cookies = None
@@ -20,7 +22,7 @@ class Auth:
     # что должно учитываться проверяться в login запросе
     was_last_request_logout = False
 
-    def __init__(self, api_url, user_to_login=test_user):
+    def __init__(self, api_url, user_to_login=test_admin):
         self.api_url = api_url
         self.user_to_login = user_to_login
 

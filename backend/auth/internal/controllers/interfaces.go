@@ -13,6 +13,9 @@ type userService interface {
 	GetAll(params map[string]string) (*[]models.User, error)
 	IsActive(user_id int) (bool, error)
 	IsAdmin(user_id int) (bool, error)
+	Create(user *models.User) error
+	Update(user *models.User) error
+	UpdateActive(user_id int, is_active bool) error
 }
 
 type jwtUseCase interface {
