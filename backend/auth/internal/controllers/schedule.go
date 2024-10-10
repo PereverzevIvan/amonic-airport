@@ -26,13 +26,12 @@ func AddScheduleControllerRoutes(
 		scheduleService: scheduleService,
 	}
 
-	(*api).Get("/schedules", controller.Schedules)
-	// (*api).Get("/schedules", controller.Schedules, authMiddleware.IsActive)
-	(*api).Get("/schedule/:id", controller.GetByID /*, auhtMiddleware.ISActive*/)
-	(*api).Put("/schedule/:id", controller.UpdateConfirmed /*, auhtMiddleware.ISActive*/)
-	(*api).Patch("/schedule/:id", controller.UpdateByID /*, auhtMiddleware.ISActive*/)
+	(*api).Get("/schedules", controller.Schedules, authMiddleware.IsActive)
+	(*api).Get("/schedule/:id", controller.GetByID, authMiddleware.IsActive)
+	(*api).Put("/schedule/:id", controller.UpdateConfirmed, authMiddleware.IsActive)
+	(*api).Patch("/schedule/:id", controller.UpdateByID, authMiddleware.IsActive)
 
-	(*api).Post("/schedules/upload", controller.SchedulesUpload)
+	(*api).Post("/schedules/upload", controller.SchedulesUpload, authMiddleware.IsAdmin)
 }
 
 // Get All Schedules (Список полетов)
@@ -55,15 +54,12 @@ func (controller *ScheduleController) Schedules(ctx fiber.Ctx) error {
 		return ctx.SendString(err.Error())
 	}
 
-	log.Info("before", params)
 	// Проверка параметров
 	err := params.Validate()
 	if err != nil {
 		ctx.SendStatus(http.StatusBadRequest)
 		return ctx.SendString(err.Error())
 	}
-
-	log.Info(params)
 
 	// Получаем список полетов
 	schedules, err := controller.scheduleService.GetAll(&params)
@@ -112,7 +108,7 @@ func (controller *ScheduleController) GetByID(ctx fiber.Ctx) error {
 // @Tags         Schedules
 // @Accept       json
 // @Produce      json
-// @Param        SchedulesParams body  models.ScheduleUpdateConfirmedParams true
+// @Param        SchedulesParams body  models.ScheduleUpdateConfirmedParams true "example"
 // @Success      200  string    "ok"
 // @Failure      400
 // @Failure      404
@@ -157,7 +153,7 @@ func (controller *ScheduleController) UpdateConfirmed(ctx fiber.Ctx) error {
 // @Tags         Schedules
 // @Accept       json
 // @Produce      json
-// @Param        SchedulesParams body  models.ScheduleUpdateParams true
+// @Param        SchedulesParams body  models.ScheduleUpdateParams true "example"
 // @Success      200  string    "ok"
 // @Failure      400
 // @Failure      404
@@ -197,17 +193,15 @@ func (controller *ScheduleController) UpdateByID(ctx fiber.Ctx) error {
 	return ctx.SendStatus(http.StatusOK)
 }
 
-// Update Schedule  by id (обновить)
-// @Summary      Update Schedule  by id
-// @Description  Обновление
+// @Summary      Загрузить файл CSV для обновления или добавления / обновления списка полетов
+// @Description  Загрузить CSV файл по ключу "file" (name="file")
 // @Tags         Schedules
 // @Accept       json
 // @Produce      json
-// @Param        SchedulesParams body  models.ScheduleUpdateParams true
-// @Success      200  string    "ok"
+// @Success      200  {object} models.SchedulesUploadResult
 // @Failure      400
 // @Failure      404
-// @Router       /schedule/{id} [patch]
+// @Router       /schedules/upload [post]
 func (controller *ScheduleController) SchedulesUpload(ctx fiber.Ctx) error {
 	// Get the file from the form input
 	file, err := ctx.FormFile("file")

@@ -224,6 +224,111 @@ const docTemplate = `{
                 }
             }
         },
+        "/schedule/{id}": {
+            "get": {
+                "description": "Получение cписка полетов",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Schedules"
+                ],
+                "summary": "Get Schedules by id",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Schedule"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            },
+            "put": {
+                "description": "Обновление статуса confirmed",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Schedules"
+                ],
+                "summary": "Update Schedule confirmed  by id",
+                "parameters": [
+                    {
+                        "description": "example",
+                        "name": "SchedulesParams",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.ScheduleUpdateConfirmedParams"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "ok",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            },
+            "patch": {
+                "description": "Обновление",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Schedules"
+                ],
+                "summary": "Update Schedule  by id",
+                "parameters": [
+                    {
+                        "description": "example",
+                        "name": "SchedulesParams",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.ScheduleUpdateParams"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "ok",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            }
+        },
         "/schedules": {
             "get": {
                 "description": "Получение cписка полетов",
@@ -239,13 +344,18 @@ const docTemplate = `{
                 "summary": "Get All Schedules",
                 "parameters": [
                     {
-                        "type": "string",
-                        "name": "flight_number",
+                        "type": "integer",
+                        "name": "arrivalAirportID",
                         "in": "query"
                     },
                     {
                         "type": "integer",
-                        "name": "from",
+                        "name": "departureAirportID",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "flightNumber",
                         "in": "query"
                     },
                     {
@@ -255,12 +365,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "name": "sort_by",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "name": "to",
+                        "name": "sortBy",
                         "in": "query"
                     }
                 ],
@@ -272,6 +377,35 @@ const docTemplate = `{
                             "items": {
                                 "$ref": "#/definitions/models.Schedule"
                             }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            }
+        },
+        "/schedules/upload": {
+            "post": {
+                "description": "Загрузить CSV файл по ключу \"file\" (name=\"file\")",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Schedules"
+                ],
+                "summary": "Загрузить файл CSV для обновления или добавления / обновления списка полетов",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.SchedulesUploadResult"
                         }
                     },
                     "400": {
@@ -612,6 +746,51 @@ const docTemplate = `{
                     "$ref": "#/definitions/models.Route"
                 },
                 "route_id": {
+                    "type": "integer"
+                },
+                "time": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.ScheduleUpdateConfirmedParams": {
+            "type": "object",
+            "properties": {
+                "confirmed": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "models.ScheduleUpdateParams": {
+            "type": "object",
+            "properties": {
+                "date": {
+                    "type": "string"
+                },
+                "economy_price": {
+                    "type": "number"
+                },
+                "time": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.SchedulesUploadResult": {
+            "type": "object",
+            "properties": {
+                "duplicated_rows_cnt": {
+                    "type": "integer"
+                },
+                "failed_rows_cnt": {
+                    "type": "integer"
+                },
+                "missing_fields_rows_cnt": {
+                    "type": "integer"
+                },
+                "successful_rows_cnt": {
+                    "type": "integer"
+                },
+                "total_rows_cnt": {
                     "type": "integer"
                 }
             }

@@ -94,6 +94,35 @@ definitions:
         $ref: '#/definitions/models.Route'
       route_id:
         type: integer
+      time:
+        type: string
+    type: object
+  models.ScheduleUpdateConfirmedParams:
+    properties:
+      confirmed:
+        type: boolean
+    type: object
+  models.ScheduleUpdateParams:
+    properties:
+      date:
+        type: string
+      economy_price:
+        type: number
+      time:
+        type: string
+    type: object
+  models.SchedulesUploadResult:
+    properties:
+      duplicated_rows_cnt:
+        type: integer
+      failed_rows_cnt:
+        type: integer
+      missing_fields_rows_cnt:
+        type: integer
+      successful_rows_cnt:
+        type: integer
+      total_rows_cnt:
+        type: integer
     type: object
   models.User:
     properties:
@@ -279,6 +308,75 @@ paths:
       summary: Refresh token
       tags:
       - Auth
+  /schedule/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Получение cписка полетов
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Schedule'
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+      summary: Get Schedules by id
+      tags:
+      - Schedules
+    patch:
+      consumes:
+      - application/json
+      description: Обновление
+      parameters:
+      - description: example
+        in: body
+        name: SchedulesParams
+        required: true
+        schema:
+          $ref: '#/definitions/models.ScheduleUpdateParams'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+      summary: Update Schedule  by id
+      tags:
+      - Schedules
+    put:
+      consumes:
+      - application/json
+      description: Обновление статуса confirmed
+      parameters:
+      - description: example
+        in: body
+        name: SchedulesParams
+        required: true
+        schema:
+          $ref: '#/definitions/models.ScheduleUpdateConfirmedParams'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+      summary: Update Schedule confirmed  by id
+      tags:
+      - Schedules
   /schedules:
     get:
       consumes:
@@ -286,20 +384,20 @@ paths:
       description: Получение cписка полетов
       parameters:
       - in: query
-        name: flight_number
-        type: string
-      - in: query
-        name: from
+        name: arrivalAirportID
         type: integer
+      - in: query
+        name: departureAirportID
+        type: integer
+      - in: query
+        name: flightNumber
+        type: string
       - in: query
         name: outbound
         type: string
       - in: query
-        name: sort_by
+        name: sortBy
         type: string
-      - in: query
-        name: to
-        type: integer
       produces:
       - application/json
       responses:
@@ -314,6 +412,26 @@ paths:
         "404":
           description: Not Found
       summary: Get All Schedules
+      tags:
+      - Schedules
+  /schedules/upload:
+    post:
+      consumes:
+      - application/json
+      description: Загрузить CSV файл по ключу "file" (name="file")
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.SchedulesUploadResult'
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+      summary: Загрузить файл CSV для обновления или добавления / обновления списка
+        полетов
       tags:
       - Schedules
   /user-sessions/:

@@ -12,5 +12,5 @@ CREATE TABLE `user_sessions` (
     
     PRIMARY KEY (`id`),
     KEY `user_id` (`user_id`),
-    CONSTRAINT `user_sessions_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+    CONSTRAINT `user_sessions_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
 )

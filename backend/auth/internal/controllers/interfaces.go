@@ -54,3 +54,7 @@ type scheduleService interface {
 	UpdateByID(schedule_id int, params *models.ScheduleUpdateParams) error
 	ApplyChangesFromSCV(src *multipart.File) (models.SchedulesUploadResult, error) // successful, duplicated, missing fields cnt
 }
+
+type airportService interface {
+	GetAll() (*[]models.Airport, error)
+}

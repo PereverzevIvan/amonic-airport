@@ -38,6 +38,9 @@ func InitControllers(app *fiber.App, conn *gorm.DB, jwtConfig *config.ConfigJWT)
 	officeService := service.NewOfficeService(officeRepo)
 	AddOfficeControllerRoutes(&api, officeService)
 
+	airportRepo := mysql_repo.NewAirportRepo(conn)
+	AddAirportControllerRoutes(&api, jwtUseCase, airportRepo, authMiddleware)
+
 	scheduleRepo := mysql_repo.NewScheduleRepo(conn)
 	routeRepo := mysql_repo.NewRouteRepo(conn)
 	scheduleService := service.NewScheduleService(scheduleRepo, routeRepo)

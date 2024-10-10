@@ -7,13 +7,13 @@ import (
 )
 
 type SchedulesParams struct {
-	Outbound     string `query:"outbound"`
-	FlightNumber string `query:"flight_number"`
+	Outbound     string `json:"outbound" query:"outbound"`
+	FlightNumber string `json:"flight_number" query:"flight_number"`
 
-	DepartureAirportID *int `query:"from"`
-	ArrivalAirportID   *int `query:"to"`
+	DepartureAirportID *int `json:"from" query:"from"`
+	ArrivalAirportID   *int `json:"to" query:"to"`
 
-	SortBy *string `query:"sort_by"`
+	SortBy *string `json:"sort_by" query:"sort_by"`
 }
 
 type KSchedulesSortBy string
