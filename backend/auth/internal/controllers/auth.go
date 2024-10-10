@@ -92,6 +92,12 @@ func (ac *AuthController) Login(ctx fiber.Ctx) error {
 		return ctx.SendString("Wrong email or password")
 	}
 
+	// Проверить, что текущий пользователь активен
+	if !user.Active {
+		ctx.SendStatus(http.StatusForbidden)
+		return ctx.SendString("User deactivated")
+	}
+
 	// Обновление токенов
 	err = ac.jwtUseCase.RefreshTokens(ctx, user)
 	if err != nil {

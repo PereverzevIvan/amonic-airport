@@ -30,7 +30,7 @@ func AddUserControllerRoutes(api *fiber.Router, userService userService, authMid
 // @Tags         Users
 // @Accept       json
 // @Produce      json
-// @Param        id path  int  true  "User ID"
+// @Param        office_id query  int  false  "Фильтр по id офиса"
 // @Success      200  {object}  models.User
 // @Failure      400
 // @Failure      404

@@ -4,6 +4,7 @@ import (
 	"errors"
 
 	"github.com/go-sql-driver/mysql"
+	"github.com/gofiber/fiber/v3/log"
 )
 
 // Unique constraint violation error handling
@@ -31,4 +32,16 @@ func IsForeignKeyConstraintError(err error) bool {
 	}
 
 	return false
+}
+
+func IsRecordNotFoundError(err error) bool {
+	if err == nil {
+		return false
+	}
+	var mysqlErr *mysql.MySQLError
+	if errors.As(err, &mysqlErr) { // Check if the error is of type *mysql.MySQLError
+		log.Info(mysqlErr.Number)
+	}
+
+	return err.Error() == "record not found"
 }

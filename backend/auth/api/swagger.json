@@ -218,6 +218,65 @@
                 }
             }
         },
+        "/schedules": {
+            "get": {
+                "description": "Получение cписка полетов",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Schedules"
+                ],
+                "summary": "Get All Schedules",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "name": "flight_number",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "name": "from",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "outbound",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "sort_by",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "name": "to",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Schedule"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            }
+        },
         "/user-sessions/": {
             "get": {
                 "description": "Получить список сессий пользователя по его ID",
@@ -346,10 +405,9 @@
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "User ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
+                        "description": "Фильтр по id офиса",
+                        "name": "office_id",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -420,6 +478,46 @@
                 }
             }
         },
+        "models.Aircraft": {
+            "type": "object",
+            "properties": {
+                "business_seats": {
+                    "type": "integer"
+                },
+                "economy_seats": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "make_model": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "total_seats": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.Airport": {
+            "type": "object",
+            "properties": {
+                "country_id": {
+                    "type": "integer"
+                },
+                "iata_code": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
         "models.Country": {
             "type": "object",
             "properties": {
@@ -448,6 +546,67 @@
                 },
                 "title": {
                     "type": "string"
+                }
+            }
+        },
+        "models.Route": {
+            "type": "object",
+            "properties": {
+                "arrival_airport": {
+                    "$ref": "#/definitions/models.Airport"
+                },
+                "arrival_airport_id": {
+                    "type": "integer"
+                },
+                "departure_airport": {
+                    "$ref": "#/definitions/models.Airport"
+                },
+                "departure_airport_id": {
+                    "type": "integer"
+                },
+                "distance": {
+                    "type": "integer"
+                },
+                "flight_time": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.Schedule": {
+            "type": "object",
+            "properties": {
+                "aircraft": {
+                    "$ref": "#/definitions/models.Aircraft"
+                },
+                "aircraft_id": {
+                    "type": "integer"
+                },
+                "confirmed": {
+                    "type": "boolean"
+                },
+                "date": {
+                    "type": "string"
+                },
+                "economy_price": {
+                    "type": "number"
+                },
+                "flight_number": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "outbound": {
+                    "type": "string"
+                },
+                "route": {
+                    "$ref": "#/definitions/models.Route"
+                },
+                "route_id": {
+                    "type": "integer"
                 }
             }
         },

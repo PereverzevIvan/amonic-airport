@@ -4,6 +4,8 @@ import jwt
 
 test_admin = {"email": "j.doe@amonic.com", "password": "123"}
 
+test_new_user = {"email": "test@mail.ru", "password": "example"}
+
 test_user = {"email": "k.omar@amonic.com", "password": "4258"}
 
 test_user_wrong_password = {"email": "j.doe@amonic.com", "password": "1234"}

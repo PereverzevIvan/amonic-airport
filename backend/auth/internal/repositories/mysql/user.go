@@ -24,7 +24,7 @@ func (r UserRepo) Create(user *models.User) error {
 	}
 
 	if IsForeignKeyConstraintError(err) &&
-		strings.Contains(err.Error(), "`FK_Users_Offices` FOREIGN KEY (`OfficeID`) REFERENCES `offices` (`ID`))") {
+		strings.Contains(err.Error(), "`FK_Users_Offices` FOREIGN KEY (`OfficeID`) foreignKey `offices` (`ID`))") {
 		return models.ErrFKOfficeIDNotFound
 	}
 
@@ -42,7 +42,7 @@ func (r UserRepo) Update(user *models.User) error {
 	}
 
 	if IsForeignKeyConstraintError(err) &&
-		strings.Contains(err.Error(), "`FK_Users_Offices` FOREIGN KEY (`OfficeID`) REFERENCES `offices` (`ID`))") {
+		strings.Contains(err.Error(), "`FK_Users_Offices` FOREIGN KEY (`OfficeID`) foreignKey `offices` (`ID`))") {
 		return models.ErrFKOfficeIDNotFound
 	}
 

@@ -1,6 +1,8 @@
 package controllers
 
 import (
+	"mime/multipart"
+
 	"gitflic.ru/project/pereverzevivan/biznes-processy-laba-1/backend/models"
 	"github.com/gofiber/fiber/v3"
 	"github.com/golang-jwt/jwt"
@@ -43,4 +45,12 @@ type userSessionUseCase interface {
 type AuthMiddleware interface {
 	IsActive(ctx fiber.Ctx) error
 	IsAdmin(ctx fiber.Ctx) error
+}
+
+type scheduleService interface {
+	GetAll(*models.SchedulesParams) (*[]models.Schedule, error)
+	GetByID(schedule_id int) (*models.Schedule, error)
+	UpdateConfirmed(schedule_id int, set_confirmed bool) error
+	UpdateByID(schedule_id int, params *models.ScheduleUpdateParams) error
+	ApplyChangesFromSCV(src *multipart.File) (models.SchedulesUploadResult, error) // successful, duplicated, missing fields cnt
 }

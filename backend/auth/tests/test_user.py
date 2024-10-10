@@ -105,6 +105,13 @@ def test_deactivate_user(api_url, mysql_conn):
 
     created_user.active = False
     _ = user_client.update_is_active(created_user)
+    
+    
+    login_inactive_response = auth.Auth(
+        api_url, auth.test_new_user).login_user(False)
+    assert login_inactive_response.status_code == 403
 
     created_user.active = True
     _ = user_client.update_is_active(created_user)
+
+    auth.Auth(api_url, auth.test_new_user).login_user()

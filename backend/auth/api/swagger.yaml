@@ -9,6 +9,32 @@ definitions:
         example: "123"
         type: string
     type: object
+  models.Aircraft:
+    properties:
+      business_seats:
+        type: integer
+      economy_seats:
+        type: integer
+      id:
+        type: integer
+      make_model:
+        type: string
+      name:
+        type: string
+      total_seats:
+        type: integer
+    type: object
+  models.Airport:
+    properties:
+      country_id:
+        type: integer
+      iata_code:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
   models.Country:
     properties:
       id:
@@ -28,6 +54,46 @@ definitions:
         type: string
       title:
         type: string
+    type: object
+  models.Route:
+    properties:
+      arrival_airport:
+        $ref: '#/definitions/models.Airport'
+      arrival_airport_id:
+        type: integer
+      departure_airport:
+        $ref: '#/definitions/models.Airport'
+      departure_airport_id:
+        type: integer
+      distance:
+        type: integer
+      flight_time:
+        type: integer
+      id:
+        type: integer
+    type: object
+  models.Schedule:
+    properties:
+      aircraft:
+        $ref: '#/definitions/models.Aircraft'
+      aircraft_id:
+        type: integer
+      confirmed:
+        type: boolean
+      date:
+        type: string
+      economy_price:
+        type: number
+      flight_number:
+        type: string
+      id:
+        type: integer
+      outbound:
+        type: string
+      route:
+        $ref: '#/definitions/models.Route'
+      route_id:
+        type: integer
     type: object
   models.User:
     properties:
@@ -213,6 +279,43 @@ paths:
       summary: Refresh token
       tags:
       - Auth
+  /schedules:
+    get:
+      consumes:
+      - application/json
+      description: Получение cписка полетов
+      parameters:
+      - in: query
+        name: flight_number
+        type: string
+      - in: query
+        name: from
+        type: integer
+      - in: query
+        name: outbound
+        type: string
+      - in: query
+        name: sort_by
+        type: string
+      - in: query
+        name: to
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Schedule'
+            type: array
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+      summary: Get All Schedules
+      tags:
+      - Schedules
   /user-sessions/:
     get:
       consumes:
@@ -294,10 +397,9 @@ paths:
       - application/json
       description: Получение информации о пользователе по его идентификатору
       parameters:
-      - description: User ID
-        in: path
-        name: id
-        required: true
+      - description: Фильтр по id офиса
+        in: query
+        name: office_id
         type: integer
       produces:
       - application/json
