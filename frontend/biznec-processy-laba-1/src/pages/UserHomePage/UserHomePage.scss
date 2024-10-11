@@ -1,0 +1,40 @@
+.user-home-page {
+  min-height: 90vh;
+  padding: 30px 30px;
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  gap: 15px;
+}
+
+.above-table-container {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 30px;
+  align-items: end;
+}
+
+.statistic-container {
+  display: flex;
+  gap: 40px;
+}
+
+.button-box {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.modal__body {
+  .form {
+    &__container {
+      grid-template-columns: 1fr;
+      row-gap: 10px;
+    }
+    &__button-box {
+      gap: 20px !important;
+      justify-content: space-between;
+      width: 100%;
+    }
+  }
+}

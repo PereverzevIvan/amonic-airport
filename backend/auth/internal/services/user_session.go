@@ -28,6 +28,7 @@ func (us UserSessionService) GetByUserID(user_id int, params *models.UserSession
 	user_sessions, err := us.userSessionRepo.GetByUserId(user_id, params)
 	return user_sessions, err
 }
+
 func (us UserSessionService) GetByID(id int) (*models.UserSession, error) {
 	user_session, err := us.userSessionRepo.GetByID(id)
 	return user_session, err

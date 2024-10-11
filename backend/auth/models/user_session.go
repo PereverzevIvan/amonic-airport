@@ -26,7 +26,6 @@ const (
 )
 
 type UserSessionParams struct {
-	PaginateParams
-	UserID                      int  `json:"user_id"`
-	OnlyUnmarkedInvalidSessions bool `json:"only_unmarked_invalid_sessions"`
+	UserID                      int  `json:"user_id" query:"user_id"`
+	OnlyUnmarkedInvalidSessions bool `json:"only_unmarked_invalid_sessions" query:"only_unmarked_invalid_sessions"`
 }

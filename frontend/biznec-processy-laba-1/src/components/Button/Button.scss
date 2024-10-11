@@ -1,0 +1,55 @@
+@use "../../scss/variables" as v;
+
+$corners: 7px;
+
+.button {
+  border: 2px solid black;
+  border-radius: $corners;
+  color: black;
+  padding: calc(5 * $corners / 5) calc(10 * $corners / 5);
+  font-weight: normal;
+  cursor: pointer;
+  transition: all 200ms;
+
+  &:hover:not(:disabled) {
+    transform: scale(1.05);
+  }
+
+  &:focus {
+    outline: 2px solid black;
+    transform: scale(1);
+  }
+
+  &_color-red {
+    background-color: v.$red-cl;
+    color: white;
+
+    &:hover {
+      background-color: v.$dark-red-cl;
+    }
+  }
+
+  &_color-blue {
+    background-color: v.$blue-cl;
+    color: white;
+
+    &:hover {
+      background-color: v.$dark-blue-cl;
+    }
+  }
+
+  &_color-green {
+    background-color: v.$green-cl;
+    color: white;
+
+    &:hover {
+      background-color: v.$dark-green-cl;
+    }
+  }
+
+  &:disabled {
+    background-color: lightgray;
+    color: black;
+    cursor: not-allowed;
+  }
+}

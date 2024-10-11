@@ -1,0 +1,47 @@
+@use "../../scss/_variables" as v;
+
+.login-page {
+  padding: 80px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 50px;
+  align-items: center;
+  min-height: 90vh;
+
+  .form {
+    width: 100%;
+    &__button-box {
+      justify-content: center !important;
+    }
+  }
+}
+
+.logo {
+  width: 500px;
+}
+
+.timer {
+  position: relative;
+  width: 100%; /* Ширина таймера */
+  height: 10px; /* Высота контейнера */
+  background-color: lightred; /* Цвет фона */
+  border: 1px solid v.$red-cl; /* Граница */
+  overflow: hidden; /* Скрываем лишнее содержимое */
+  border-radius: 5px;
+}
+
+.line {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  background-color: v.$red-cl; /* Цвет линии таймера */
+}
+
+@keyframes countdown {
+  from {
+    width: 100%; /* Начальная ширина (полная) */
+  }
+  to {
+    width: 0%; /* Конечная ширина (нулевая) */
+  }
+}

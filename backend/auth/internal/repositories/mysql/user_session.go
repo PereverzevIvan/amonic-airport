@@ -26,7 +26,6 @@ func (repo UserSessionRepo) GetByUserId(user_id int, params *models.UserSessionP
 
 	res := repo.Conn.
 		Scopes(
-			ScopePaginate(&params.PaginateParams),
 			ScopeUserSessionParams(params),
 		).
 		Model(&models.UserSession{}).

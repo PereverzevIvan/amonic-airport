@@ -1,8 +1,9 @@
-# React + Vite
+# Bizness-processy-laba-1: Frontend
+В этой папке хранится фронт первой лабораторной работы по проектированию бизнес приложений.
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Для запуска проекта нужно использовать команду:
+```
+make up
+```
 
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Если на вашем компьютере нет утилиты `make`, то вы можете просто использовать команды, псевдонимом для которых являются команды make.

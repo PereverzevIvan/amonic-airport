@@ -1,0 +1,20 @@
+$padding-left-right: 70px;
+
+.header {
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border-bottom: 1px solid lightgray;
+
+  &__container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px $padding-left-right;
+
+    .logo {
+      width: 200px;
+    }
+  }
+}

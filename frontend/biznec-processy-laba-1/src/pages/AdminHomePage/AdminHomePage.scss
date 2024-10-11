@@ -1,0 +1,35 @@
+.admin-home-page {
+  padding: 30px 30px;
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  gap: 20px;
+  min-height: 90vh;
+  .above-table-line {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .select-office {
+    cursor: pointer;
+  }
+  .select-label {
+    cursor: default;
+  }
+
+  .form {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    row-gap: 20px;
+    &__button-box {
+      grid-column: 1 / 3;
+    }
+  }
+}
+
+.button-box {
+  justify-content: center;
+  gap: 30px !important;
+}

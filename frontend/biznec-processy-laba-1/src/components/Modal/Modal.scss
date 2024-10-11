@@ -1,0 +1,71 @@
+@use "../../scss/_variables.scss" as v;
+
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background-color: rgba(0, 0, 0, 0.5);
+  padding: 10px;
+
+  &_showed {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  &_hidden {
+    display: none;
+  }
+
+  &__window {
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    width: 50%;
+    border: 2px solid black;
+  }
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    border-bottom: 2px solid black;
+    align-items: center;
+  }
+
+  &__body {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    padding: 10px 20px;
+  }
+}
+
+$close-button-size: 15px;
+.close-button {
+  height: calc($close-button-size + 10px);
+  width: calc($close-button-size + 10px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 100%;
+  transition: all 200ms;
+
+  &:hover {
+    // transform: scale(1.2);
+    background-color: v.$blue-cl;
+    .cross-svg {
+      fill: white;
+    }
+  }
+
+  .cross-svg {
+    width: $close-button-size;
+  }
+}

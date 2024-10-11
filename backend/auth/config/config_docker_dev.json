@@ -13,7 +13,7 @@
   },
   "jwt": {
     "secret_key": "super-duper-secret-key-4-jwt-auth",
-    "access_token_expiration": "10m",
+    "access_token_expiration": "15m",
     "refresh_token_expiration": "8h"
   }
 }

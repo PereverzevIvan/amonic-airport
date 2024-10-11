@@ -1,0 +1,77 @@
+.main-page {
+  background-image: url("../../assets/images/mainPage/bg.jpg");
+  background-size: cover;
+  background-repeat: no-repeat;
+  position: relative;
+  min-height: 90vh;
+
+  .title {
+    position: absolute;
+    top: 9%;
+    right: 8%;
+    z-index: 10;
+    animation: fadeIn 2.1s ease-in-out;
+  }
+
+  .link-button {
+    padding: 10px 40px;
+    font-weight: bold;
+    position: absolute;
+    right: 10%;
+    top: 60%;
+    max-width: 280px;
+    animation: fadeIn 2.1s ease-in-out;
+    z-index: 10;
+  }
+}
+
+$left-margin: 5%;
+$top-margin: 7%;
+$image-size-coef: 0.8;
+
+.main-vector-image {
+  width: calc(890px * $image-size-coef);
+  position: absolute;
+  z-index: 1;
+  top: $top-margin;
+  left: $left-margin;
+  animation: fadeIn 2s ease-in-out;
+}
+
+.main-airplane-image {
+  width: calc(790px * $image-size-coef);
+  position: absolute;
+  z-index: 3;
+  top: calc($top-margin + 20%);
+  left: calc($left-margin + 8%);
+  animation: planeMove 2s ease-in-out;
+}
+
+.main-cloud-image {
+  width: calc(490px * $image-size-coef);
+  position: absolute;
+  z-index: 2;
+  top: calc($top-margin + 43%);
+  left: calc($left-margin + 25%);
+  animation: fadeIn 3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes planeMove {
+  from {
+    opacity: 0;
+    transform: translate(100px, 100px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(0, 0);
+  }
+}

@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"net/http"
 
 	"gitflic.ru/project/pereverzevivan/biznes-processy-laba-1/backend/internal/utils"
@@ -116,6 +117,7 @@ func (controller *UserSessionController) SetUnsuccessfullLogoutReason(ctx fiber.
 
 	body := map[string]string{}
 	err = ctx.Bind().Body(&body)
+	fmt.Println(body)
 	if err != nil {
 		ctx.SendStatus(http.StatusBadRequest)
 		return ctx.SendString("body is required")

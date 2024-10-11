@@ -1,0 +1,30 @@
+@use "../../scss/_variables.scss" as v;
+@use "../Header/Header.scss" as header;
+
+.nav {
+  padding: 7px 10px;
+
+  &__list {
+    display: flex;
+    list-style: none;
+    gap: 10px;
+    margin: 0px;
+  }
+
+  &__item {
+    & a {
+      color: v.$blue-cl;
+      border-radius: 5px;
+      padding: 3px 10px;
+      text-decoration: underline !important;
+      transition: all 500ms;
+
+      &:hover,
+      &.active {
+        background-color: v.$blue-cl;
+        color: white;
+        text-decoration: none !important;
+      }
+    }
+  }
+}

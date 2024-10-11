@@ -1,0 +1,11 @@
+@use "../../scss/variables" as v;
+
+.footer {
+  background-color: black;
+  text-align: center;
+  padding: 20px 0px;
+
+  & .common-text {
+    color: white;
+  }
+}

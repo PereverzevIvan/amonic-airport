@@ -32,7 +32,7 @@ func main() {
 	app := fiber.New()
 
 	app.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://swagger-ui:8080", "http://frontend:3000", "http://localhost:5043"},
+		AllowOrigins:     []string{"http://localhost:5043", "http://frontend:5173", "http://localhost:5173"},
 		AllowCredentials: true, // Разрешение отправки кук
 	}))
 
