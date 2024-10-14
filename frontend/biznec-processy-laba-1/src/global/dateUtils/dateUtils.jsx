@@ -1,23 +1,45 @@
 export function getTimeFromString(string) {
   const dateObj = new Date(string);
   const time = dateObj.toLocaleTimeString("ru-RU", {
+    timeZone: "UTC",
     hour: "2-digit",
     minute: "2-digit",
-    second: "2-digit",
   });
 
   return time;
 }
 
-export function getDateFromString(string) {
+export function getDateFromString(string, separator = ".") {
   const dateObj = new Date(string);
-  const date = dateObj.toLocaleDateString("ru-RU", {
+
+  // Получаем отдельные части даты
+  const day = dateObj.toLocaleString("ru-RU", {
+    timeZone: "UTC",
     day: "2-digit",
+  });
+  const month = dateObj.toLocaleString("ru-RU", {
+    timeZone: "UTC",
     month: "2-digit",
+  });
+  const year = dateObj.toLocaleString("ru-RU", {
+    timeZone: "UTC",
     year: "numeric",
   });
 
-  return date;
+  // Соединяем части с использованием разделителя
+  const formattedDate = `${day}${separator}${month}${separator}${year}`;
+
+  return formattedDate;
+}
+
+// return date as string in UTC in format "yyyy-mm-dd"
+export function getUTCDateFromString(string) {
+  const dateObj = new Date(string);
+  const date = dateObj.getUTCDate().toString().padStart(2, "0");
+  const month = (dateObj.getUTCMonth() + 1).toString().padStart(2, "0");
+  const year = dateObj.getUTCFullYear();
+
+  return `${year}-${month}-${date}`;
 }
 
 export function ConvertMillisecondsToTimeString(timeDiff) {

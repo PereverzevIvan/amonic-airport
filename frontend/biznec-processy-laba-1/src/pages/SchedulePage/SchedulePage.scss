@@ -1,0 +1,78 @@
+.schedule-page {
+  padding: 20px 30px 50px 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  align-items: center;
+
+  .table-container {
+    max-height: 350px;
+  }
+
+  .under-table-line {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+  }
+
+  .form {
+    max-width: none;
+    width: 100%;
+
+    &__container {
+      grid-template-columns: 1fr 2fr;
+      gap: 10px !important;
+      label {
+        justify-self: end;
+      }
+    }
+
+    &__fieldset {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 15px;
+
+      button {
+        justify-self: end;
+        min-width: 200px;
+      }
+    }
+  }
+}
+
+.edit-schedule-form {
+  gap: 20px !important;
+
+  .form__fieldset {
+    display: flex;
+    justify-content: space-around;
+    // gap: 30px;
+    .form__label {
+      // display: inline;
+    }
+  }
+
+  .form__layout {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    .form__container {
+      // width: 100%;
+      display: flex;
+      gap: 10px;
+
+      .form__input {
+        flex-grow: 1;
+        width: fit-content !important;
+      }
+    }
+
+    .form__button-box {
+      width: 100%;
+      justify-content: end;
+      gap: 20px;
+    }
+  }
+}

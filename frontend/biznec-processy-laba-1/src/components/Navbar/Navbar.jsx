@@ -3,6 +3,27 @@ import { Link, useLocation } from "react-router-dom";
 import "./Navbar.scss";
 import { useAuth } from "../../context/authContext";
 
+const links = [
+  {
+    path: rp.USER_HOME_ROUTE,
+    needAuth: true,
+    needRole: "admin",
+    title: "Страница пользователя",
+  },
+  {
+    path: rp.ADMIN_HOME_ROUTE,
+    needAuth: true,
+    needRole: "admin",
+    title: "Страница админа",
+  },
+  {
+    path: rp.SCHEDULE_ROUTE,
+    needAuth: true,
+    needRole: "admin",
+    title: "Расписания",
+  },
+];
+
 function Navbar() {
   let curLoc = useLocation();
   const { isAuth, role } = useAuth();
@@ -11,41 +32,21 @@ function Navbar() {
     <>
       <nav className="nav">
         <ul className="nav__list">
-          <li className="nav__item">
-            <Link
-              className={curLoc.pathname == rp.MAIN_ROUTE ? "active" : ""}
-              to={rp.MAIN_ROUTE}
-            >
-              Главная{" "}
-            </Link>
-          </li>
-          {isAuth && (
-            <>
-              {role == "admin" && (
-                <li className="nav__item">
-                  <Link
-                    className={
-                      curLoc.pathname == rp.ADMIN_HOME_ROUTE ? "active" : ""
-                    }
-                    to={rp.ADMIN_HOME_ROUTE}
-                  >
-                    Страница админа
-                  </Link>
-                </li>
-              )}
+          {links.map((link, index) => {
+            if (link.needAuth && !isAuth) return "";
+            if (link.needRole && role != link.needRole) return "";
 
-              <li className="nav__item">
+            return (
+              <li className="nav__item" key={index}>
                 <Link
-                  className={
-                    curLoc.pathname == rp.USER_HOME_ROUTE ? "active" : ""
-                  }
-                  to={rp.USER_HOME_ROUTE}
+                  className={curLoc.pathname == link.path ? "active" : ""}
+                  to={link.path}
                 >
-                  Страница пользователя
+                  {link.title}
                 </Link>
               </li>
-            </>
-          )}
+            );
+          })}
         </ul>
       </nav>
     </>

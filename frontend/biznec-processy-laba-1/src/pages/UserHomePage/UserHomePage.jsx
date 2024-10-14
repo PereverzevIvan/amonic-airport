@@ -16,6 +16,7 @@ import {
 import { useAuth } from "../../context/authContext.jsx";
 import { getUserById } from "../../api/usersApi.jsx";
 import { allFieldsNotEmpty } from "../../global/formUtils/formUtils.jsx";
+import { useToast } from "../../context/ToastContext.jsx";
 
 function prepareDataToShow(data) {
   if (!data) return [[], 0];
@@ -275,9 +276,7 @@ function EditUserSessionModal({
   changeSessionInState,
 }) {
   const { apiClient } = useApi();
-
-  const [message, setMessage] = useState("");
-  const [messageType, setMessageType] = useState("");
+  const { addToast } = useToast();
 
   const [formData, setFormData] = useState({
     crash_reason_type: null,
@@ -300,15 +299,6 @@ function EditUserSessionModal({
       });
     }
   }, [userSession]);
-
-  function clearMessage() {
-    setMessageType("");
-    setMessage("");
-  }
-
-  function setTimeoutForMessage() {
-    setTimeout(clearMessage, 3 * 1000);
-  }
 
   function handleChange(event) {
     const { name, value } = event.target;
@@ -337,15 +327,11 @@ function EditUserSessionModal({
       })
       .catch((error) => {
         if (error.response) {
-          setMessage(error.response.data);
-          setMessageType("error");
+          addToast(error.response.data, "error");
         } else {
-          setMessage("Ошибка сети");
-          setMessageType("error");
+          addToast("Ошибка сети", "error");
         }
       });
-
-    setTimeoutForMessage();
   }
 
   return (
@@ -355,9 +341,6 @@ function EditUserSessionModal({
         handleClose={handleClose}
         title="Выход из системы не обнаружен"
       >
-        {message && (
-          <div className={`message message_${messageType}`}>{message}</div>
-        )}
         <p className="common-text common-text_big">
           При вашем последнем входе в систему не был выполнен выход из системы.
           Что произошло{" "}

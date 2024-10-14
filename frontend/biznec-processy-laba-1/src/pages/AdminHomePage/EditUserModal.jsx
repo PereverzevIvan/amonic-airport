@@ -7,6 +7,7 @@ import {
   validateEmail,
 } from "../../global/formUtils/formUtils.jsx";
 import { useEffect, useState } from "react";
+import { useToast } from "../../context/ToastContext.jsx";
 
 export function EditUserModal({
   show = false,
@@ -16,9 +17,7 @@ export function EditUserModal({
   editUserInState,
 }) {
   const { apiClient } = useApi();
-
-  const [message, setMessage] = useState("");
-  const [messageType, setMessageType] = useState("");
+  const { addToast } = useToast();
 
   const [formData, setFormData] = useState({
     id: "",
@@ -38,11 +37,6 @@ export function EditUserModal({
       office_id: "",
       role_id: "",
     });
-  }
-
-  function clearMessage() {
-    setMessageType("");
-    setMessage("");
   }
 
   useEffect(() => {
@@ -81,27 +75,19 @@ export function EditUserModal({
       .then((response) => {
         if (response.status == 200) {
           const editedUser = response.data;
-          setMessage(`Пользователь успешно изменён`);
-          setMessageType("success");
+          addToast("Пользователь успешно изменён");
           editUserInState(editedUser);
         }
       })
       .catch((error) => {
         if (error.response) {
           error.response.data
-            ? setMessage(error.response.data)
-            : setMessage(`Произошла ошибка ${error.response.status}`);
+            ? addToast(error.response.data, "error")
+            : addToast(`Произошла ошибка ${error.response.status}`, "error");
         } else {
-          setMessage("Ошибка сети");
+          addToast("Ошибка сети", "error");
         }
-        setMessageType("error");
       });
-
-    setTimeoutForMessage();
-  }
-
-  function setTimeoutForMessage() {
-    setTimeout(clearMessage, 3 * 1000);
   }
 
   return (
@@ -110,13 +96,9 @@ export function EditUserModal({
         show={show}
         title="Редактирование пользователя"
         handleClose={() => {
-          clearMessage();
           handleClose();
         }}
       >
-        {message && (
-          <div className={`message message_${messageType}`}>{message}</div>
-        )}
         <form className="form" onSubmit={handleSubmit}>
           <label className="form__label" htmlFor="edit-email-field">
             Почта
@@ -223,7 +205,6 @@ export function EditUserModal({
             <Button
               color="red"
               onClick={() => {
-                clearMessage();
                 handleClose();
               }}
             >

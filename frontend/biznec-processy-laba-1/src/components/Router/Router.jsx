@@ -7,6 +7,7 @@ import UserHomePage from "../../pages/UserHomePage/UserHomePage";
 import * as rp from "../../global/routerPaths/routerPaths";
 import { ProtectedRoute } from "./ProtectedRoute";
 import { BaseErrorPage } from "../../pages/ErrorPages/BaseErorrPage/BaseErrorPage";
+import SchedulePage from "../../pages/SchedulePage/SchedulePage";
 
 function Router() {
   return (
@@ -27,6 +28,14 @@ function Router() {
           element={
             <ProtectedRoute requiredRole={"user"}>
               <UserHomePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path={rp.SCHEDULE_ROUTE}
+          element={
+            <ProtectedRoute requiredRole={"admin"}>
+              <SchedulePage />
             </ProtectedRoute>
           }
         />

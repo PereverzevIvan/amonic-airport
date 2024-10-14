@@ -19,6 +19,38 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/airports": {
+            "get": {
+                "description": "Получение cписка самолётов",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Airports"
+                ],
+                "summary": "Get All Airports",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Airport"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            }
+        },
         "/country/{id}": {
             "get": {
                 "description": "Получение информации о стране по ее числовому ID",
@@ -344,18 +376,13 @@ const docTemplate = `{
                 "summary": "Get All Schedules",
                 "parameters": [
                     {
-                        "type": "integer",
-                        "name": "arrivalAirportID",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "name": "departureAirportID",
-                        "in": "query"
-                    },
-                    {
                         "type": "string",
-                        "name": "flightNumber",
+                        "name": "flight_number",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "name": "from",
                         "in": "query"
                     },
                     {
@@ -365,7 +392,12 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "name": "sortBy",
+                        "name": "sort_by",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "name": "to",
                         "in": "query"
                     }
                 ],

@@ -4,6 +4,7 @@ import vector from "../../assets/images/mainPage/vector.svg";
 import airplane from "../../assets/images/mainPage/airplane.png";
 import "./MainPage.scss";
 import { Link } from "react-router-dom";
+import { useToast } from "../../context/ToastContext";
 
 function MainPage() {
   return (

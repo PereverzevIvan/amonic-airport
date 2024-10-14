@@ -7,6 +7,7 @@ import { useApi } from "../../context/apiContext.jsx";
 import { getOffices } from "../../api/officesApi.jsx";
 import { AddUserModal } from "./AddUserModal.jsx";
 import { EditUserModal } from "./EditUserModal.jsx";
+import { useToast } from "../../context/ToastContext.jsx";
 
 function createOfficesMap(offices) {
   let officesMap = new Map();
@@ -60,17 +61,7 @@ function AdminHomePage() {
     }
   }
 
-  const [message, setMessage] = useState("");
-  const [messageType, setMessageType] = useState("");
-
-  function clearMessage() {
-    setMessageType("");
-    setMessage("");
-  }
-
-  function setTimeoutForMessage() {
-    setTimeout(clearMessage, 3 * 1000);
-  }
+  const { addToast } = useToast();
 
   function handleClickOnRow(index) {
     if (index == selectedRow) {
@@ -94,20 +85,18 @@ function AdminHomePage() {
       .then((response) => {
         if (response.status == 200) {
           updateUserActiveInState(index, isActive);
-          setMessage("Статус пользователя успешно изменен");
-          setMessageType("success");
+          addToast("Статус пользователя успешно изменен");
         }
       })
       .catch((error) => {
         if (error.response) {
-          if (error.response.data) setMessage(`Ошибка: ${error.response.data}`);
-          else setMessage("Ошибка сети");
+          if (error.response.data) addToast(`Ошибка: ${error.response.data}`);
+          else addToast("Ошибка сети", "error");
         }
-        setMessageType("error");
       });
 
     setSelectedRow(null);
-    setTimeoutForMessage();
+    setUserDataForEdit(null);
   }
 
   const updateUserActiveInState = (index, isActive) => {
@@ -126,6 +115,7 @@ function AdminHomePage() {
           console.log("Офисы успешно получены");
         })
         .catch((error) => {
+          addToast("Не удалось получить офисы", "error");
           console.error("Не удалось получить офисы");
         });
     }
@@ -144,6 +134,7 @@ function AdminHomePage() {
         })
         .catch((error) => {
           if (error.response) {
+            addToast("Не удалось получить данные о пользователях", "error");
             console.error(
               "Не удалось получить данные о пользователях",
               error.response.status,
@@ -188,22 +179,20 @@ function AdminHomePage() {
               <option className="drop-down-list__item" value="">
                 Все офисы
               </option>
-              {offices.map((curOffice, index) => {
-                return (
-                  <option
-                    className="drop-down-list__item"
-                    key={index}
-                    value={curOffice.id}
-                  >
-                    {curOffice.title}
-                  </option>
-                );
-              })}
+              {offices &&
+                offices.map((curOffice, index) => {
+                  return (
+                    <option
+                      className="drop-down-list__item"
+                      key={index}
+                      value={curOffice.id}
+                    >
+                      {curOffice.title}
+                    </option>
+                  );
+                })}
             </select>
           </label>
-          {message && (
-            <div className={`message message_${messageType}`}>{message}</div>
-          )}
           <Button
             color="blue"
             onClick={() => {
@@ -226,44 +215,45 @@ function AdminHomePage() {
               </tr>
             </thead>
             <tbody className="table__body">
-              {users.map((curUser, index) => {
-                if (
-                  selectedOffice != "" &&
-                  curUser.office_id != selectedOffice
-                ) {
-                  return "";
-                }
-                return (
-                  <tr
-                    className={`table__row
+              {users &&
+                users.map((curUser, index) => {
+                  if (
+                    selectedOffice != "" &&
+                    curUser.office_id != selectedOffice
+                  ) {
+                    return "";
+                  }
+                  return (
+                    <tr
+                      className={`table__row
                           ${curUser.role_id == 1 ? "green" : ""} 
                           ${curUser.active == false ? "red" : ""} 
                           ${index == selectedRow ? "blue" : ""}`}
-                    key={index}
-                    onClick={() => {
-                      handleClickOnRow(index);
-                    }}
-                  >
-                    <td className="table__data">{curUser.first_name}</td>
-                    <td className="table__data">{curUser.last_name}</td>
-                    <td className="table__data">
-                      {getYearDiferenceFrom2Strings(
-                        curUser.birthday,
-                        new Date().toISOString(),
-                      )}
-                    </td>
-                    <td className="table__data">
-                      {rolesMap.get(curUser.role_id)}
-                    </td>
-                    <td className="table__data">{curUser.email}</td>
-                    <td className="table__data">
-                      {officesMap.has(curUser.office_id)
-                        ? officesMap.get(curUser.office_id).title
-                        : "Неизвестно"}
-                    </td>
-                  </tr>
-                );
-              })}
+                      key={index}
+                      onClick={() => {
+                        handleClickOnRow(index);
+                      }}
+                    >
+                      <td className="table__data">{curUser.first_name}</td>
+                      <td className="table__data">{curUser.last_name}</td>
+                      <td className="table__data">
+                        {getYearDiferenceFrom2Strings(
+                          curUser.birthday,
+                          new Date().toISOString(),
+                        )}
+                      </td>
+                      <td className="table__data">
+                        {rolesMap.get(curUser.role_id)}
+                      </td>
+                      <td className="table__data">{curUser.email}</td>
+                      <td className="table__data">
+                        {officesMap.has(curUser.office_id)
+                          ? officesMap.get(curUser.office_id).title
+                          : "Неизвестно"}
+                      </td>
+                    </tr>
+                  );
+                })}
             </tbody>
           </table>
         </div>

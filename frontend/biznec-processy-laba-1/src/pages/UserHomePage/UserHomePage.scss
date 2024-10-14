@@ -30,7 +30,9 @@
     &__container {
       grid-template-columns: 1fr;
       row-gap: 10px;
+      color: black;
     }
+
     &__button-box {
       gap: 20px !important;
       justify-content: space-between;
