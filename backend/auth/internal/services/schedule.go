@@ -16,6 +16,7 @@ type ScheduleRepo interface {
 	UpdateByID(schedule_id int, params *models.ScheduleUpdateParams) error
 	Add(schedule *models.Schedule) error
 	Edit(schedule *models.Schedule) error
+	SearchFlights(params *models.SearchFlightsParams) ([][]*models.Schedule, error)
 }
 
 type RouteRepo interface {
@@ -139,4 +140,19 @@ func (s scheduleService) ApplyChangesFromSCV(src *multipart.File) (models.Schedu
 	}
 
 	return res, nil
+}
+
+func (s scheduleService) SearchFlights(params *models.SearchFlightsParams) ([][]*models.Schedule, error) {
+	results, err := s.scheduleRepo.SearchFlights(params)
+	if err != nil {
+		return nil, err
+	}
+
+	for i := 0; i < len(results); i++ {
+		for j := 0; j < len(results[i]); j++ {
+			results[i][j].Route = nil
+		}
+	}
+
+	return results, nil
 }

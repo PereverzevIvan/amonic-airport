@@ -45,6 +45,29 @@
                 }
             }
         },
+        "/countries": {
+            "get": {
+                "description": "Получение стран",
+                "tags": [
+                    "Country"
+                ],
+                "summary": "Get All Countries",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Country"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
         "/country/{id}": {
             "get": {
                 "description": "Получение информации о стране по ее числовому ID",
@@ -416,7 +439,6 @@
         },
         "/schedules/upload": {
             "post": {
-                "description": "Загрузить CSV файл по ключу \"file\" (name=\"file\")",
                 "consumes": [
                     "application/json"
                 ],
@@ -432,6 +454,160 @@
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/models.SchedulesUploadResult"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            }
+        },
+        "/search-flights": {
+            "post": {
+                "description": "Загрузить CSV файл по ключу \"file\" (name=\"file\")",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Schedules"
+                ],
+                "summary": "Поиск полётов между двумя аэропортами с пересадками",
+                "parameters": [
+                    {
+                        "description": "example",
+                        "name": "SearchOutboundAndInboundFlightsParams",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.SearchOutboundAndInboundFlightsParams"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.SearchOutboundAndInboundFlightResult"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            }
+        },
+        "/tickets/booking": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Tickets"
+                ],
+                "summary": "Book tickets",
+                "parameters": [
+                    {
+                        "description": "example",
+                        "name": "TicketsBookingParams",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.TicketsBookingParams"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.TicketsBookResult"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            }
+        },
+        "/tickets/confirm": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Tickets"
+                ],
+                "summary": "Confirm tickets",
+                "parameters": [
+                    {
+                        "description": "example",
+                        "name": "TicketIDsParams",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.TicketIDsParams"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            }
+        },
+        "/tickets/remaining-seats-count": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Tickets"
+                ],
+                "summary": "Check enough tickets",
+                "parameters": [
+                    {
+                        "description": "example",
+                        "name": "TicketsCountRemainingSeatsParams",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.TicketsCountRemainingSeatsParams"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.TicketsRemainingSeatsCount"
                         }
                     },
                     "400": {
@@ -684,6 +860,17 @@
                 }
             }
         },
+        "models.CabinType": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
         "models.Country": {
             "type": "object",
             "properties": {
@@ -817,6 +1004,204 @@
                     "type": "integer"
                 },
                 "total_rows_cnt": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.SearchFlightsParams": {
+            "type": "object",
+            "properties": {
+                "from": {
+                    "type": "integer"
+                },
+                "increase_search_interval": {
+                    "type": "boolean"
+                },
+                "outbound_date": {
+                    "type": "string"
+                },
+                "to": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.SearchOutboundAndInboundFlightResult": {
+            "type": "object",
+            "properties": {
+                "inbound_flights": {
+                    "type": "array",
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/definitions/models.Schedule"
+                        }
+                    }
+                },
+                "outbound_flights": {
+                    "type": "array",
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/definitions/models.Schedule"
+                        }
+                    }
+                }
+            }
+        },
+        "models.SearchOutboundAndInboundFlightsParams": {
+            "type": "object",
+            "properties": {
+                "inbound": {
+                    "$ref": "#/definitions/models.SearchFlightsParams"
+                },
+                "outbound": {
+                    "$ref": "#/definitions/models.SearchFlightsParams"
+                }
+            }
+        },
+        "models.Ticket": {
+            "type": "object",
+            "properties": {
+                "booking_reference": {
+                    "type": "string"
+                },
+                "cabinType": {
+                    "$ref": "#/definitions/models.CabinType"
+                },
+                "cabin_type_id": {
+                    "type": "integer"
+                },
+                "confirmed": {
+                    "type": "boolean"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "first_name": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "last_name": {
+                    "type": "string"
+                },
+                "passport_country_id": {
+                    "type": "integer"
+                },
+                "passport_number": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "schedule": {
+                    "$ref": "#/definitions/models.Schedule"
+                },
+                "schedule_id": {
+                    "type": "integer"
+                },
+                "user_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.TicketIDsParams": {
+            "type": "object",
+            "properties": {
+                "tickets": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                }
+            }
+        },
+        "models.TicketPassengerInfo": {
+            "type": "object",
+            "properties": {
+                "birthday": {
+                    "type": "string"
+                },
+                "first_name": {
+                    "type": "string"
+                },
+                "last_name": {
+                    "type": "string"
+                },
+                "passport_country_id": {
+                    "type": "integer"
+                },
+                "passport_number": {
+                    "type": "string"
+                },
+                "phone": {
+                    "description": "Email string `json:\"email\"`",
+                    "type": "string"
+                }
+            }
+        },
+        "models.TicketsBookResult": {
+            "type": "object",
+            "properties": {
+                "tickets": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Ticket"
+                    }
+                },
+                "total_cost": {
+                    "type": "number"
+                }
+            }
+        },
+        "models.TicketsBookingParams": {
+            "type": "object",
+            "properties": {
+                "cabin_type": {
+                    "type": "integer"
+                },
+                "inbound_schedules": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "outbound_schedules": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "passengers": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.TicketPassengerInfo"
+                    }
+                }
+            }
+        },
+        "models.TicketsCountRemainingSeatsParams": {
+            "type": "object",
+            "properties": {
+                "schedule_ids": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                }
+            }
+        },
+        "models.TicketsRemainingSeatsCount": {
+            "type": "object",
+            "properties": {
+                "business_seats": {
+                    "type": "integer"
+                },
+                "economy_seats": {
+                    "type": "integer"
+                },
+                "first_class_seats": {
                     "type": "integer"
                 }
             }

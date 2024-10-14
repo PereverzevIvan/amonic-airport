@@ -36,3 +36,14 @@ func (r CountryRepo) GetByName(name string) (*models.Country, error) {
 
 	return &country, nil
 }
+
+func (r CountryRepo) GetAll() ([]*models.Country, error) {
+	var countries []*models.Country
+
+	err := r.Conn.Find(&countries).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return countries, nil
+}

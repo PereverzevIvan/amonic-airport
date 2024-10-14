@@ -53,8 +53,21 @@ type scheduleService interface {
 	UpdateConfirmed(schedule_id int, set_confirmed bool) error
 	UpdateByID(schedule_id int, params *models.ScheduleUpdateParams) error
 	ApplyChangesFromSCV(src *multipart.File) (models.SchedulesUploadResult, error) // successful, duplicated, missing fields cnt
+	SearchFlights(params *models.SearchFlightsParams) ([][]*models.Schedule, error)
 }
 
 type airportService interface {
 	GetAll() (*[]models.Airport, error)
+}
+
+type ticketService interface {
+	CountRemainingSeats(params *models.TicketsCountRemainingSeatsParams) (*models.TicketsRemainingSeatsCount, error)
+	BookTickets(params *models.TicketsBookingParams) ([]*models.Ticket, error)
+	ChangeTicketsStatus(ticket_ids []int, set_confirmed bool) error
+}
+
+type CountryService interface {
+	GetByID(id int) (*models.Country, error)
+	GetByName(title string) (*models.Country, error)
+	GetAll() ([]*models.Country, error)
 }

@@ -16,4 +16,5 @@ const (
 	ErrDuplicatedEmail    = Error("duplicated email error")
 	ErrFKOfficeIDNotFound = Error("office with this id not found")
 	ErrCSVMissingFields   = Error("missing fields in csv file")
+	ErrNoTicketsAvailable = Error("no tickets available")
 )

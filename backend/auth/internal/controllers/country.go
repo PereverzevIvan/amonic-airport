@@ -1,14 +1,9 @@
 package controllers
 
 import (
-	"gitflic.ru/project/pereverzevivan/biznes-processy-laba-1/backend/models"
 	"github.com/gofiber/fiber/v3"
+	"github.com/gofiber/fiber/v3/log"
 )
-
-type CountryService interface {
-	GetByID(id int) (*models.Country, error)
-	GetByName(title string) (*models.Country, error)
-}
 
 type CountryController struct {
 	CountryService CountryService
@@ -18,6 +13,7 @@ func AddCountryControllerRoutes(router *fiber.Router, s CountryService) {
 	controller := CountryController{CountryService: s}
 
 	(*router).Get("/country/:id", controller.GetByID)
+	(*router).Get("/countries", controller.GetAll)
 }
 
 // Get Country By ID
@@ -44,4 +40,20 @@ func (con CountryController) GetByID(c fiber.Ctx) error {
 	}
 
 	return c.Status(fiber.StatusOK).JSON(country)
+}
+
+// @Summary      Get All Countries
+// @Description  Получение стран
+// @Tags         Country
+// @Success      200  {object}  []models.Country
+// @Failure      500
+// @Router       /countries [get]
+func (con CountryController) GetAll(ctx fiber.Ctx) error {
+	countries, err := con.CountryService.GetAll()
+	if err != nil {
+		log.Error(err)
+		return ctx.SendStatus(fiber.StatusInternalServerError)
+	}
+
+	return ctx.Status(fiber.StatusOK).JSON(countries)
 }

@@ -32,6 +32,8 @@ func AddScheduleControllerRoutes(
 	(*api).Patch("/schedule/:id", controller.UpdateByID, authMiddleware.IsActive)
 
 	(*api).Post("/schedules/upload", controller.SchedulesUpload, authMiddleware.IsAdmin)
+
+	(*api).Post("/search-flights", controller.SearchFlights, authMiddleware.IsActive)
 }
 
 // Get All Schedules (Список полетов)
@@ -194,7 +196,6 @@ func (controller *ScheduleController) UpdateByID(ctx fiber.Ctx) error {
 }
 
 // @Summary      Загрузить файл CSV для обновления или добавления / обновления списка полетов
-// @Description  Загрузить CSV файл по ключу "file" (name="file")
 // @Tags         Schedules
 // @Accept       json
 // @Produce      json
@@ -233,4 +234,58 @@ func (controller *ScheduleController) SchedulesUpload(ctx fiber.Ctx) error {
 	}
 
 	return ctx.Status(http.StatusOK).JSON(res)
+}
+
+// @Summary      Поиск полётов между двумя аэропортами с пересадками
+// @Description  Загрузить CSV файл по ключу "file" (name="file")
+// @Tags         Schedules
+// @Accept       json
+// @Produce      json
+// @Param        SearchOutboundAndInboundFlightsParams body  models.SearchOutboundAndInboundFlightsParams true "example"
+// @Success      200  {object} models.SearchOutboundAndInboundFlightResult
+// @Failure      400
+// @Failure      404
+// @Router       /search-flights [post]
+func (controller *ScheduleController) SearchFlights(ctx fiber.Ctx) error {
+	params := models.SearchOutboundAndInboundFlightsParams{}
+
+	if err := ctx.Bind().Body(&params); err != nil {
+		log.Error(err)
+		return ctx.Status(fiber.StatusBadRequest).SendString(err.Error())
+	}
+
+	err := params.Validate()
+	if err != nil {
+		log.Error(err)
+		return ctx.Status(fiber.StatusBadRequest).SendString(err.Error())
+	}
+
+	search_results := models.SearchOutboundAndInboundFlightResult{}
+
+	// Найти полёты
+	outbound_results, err := controller.scheduleService.SearchFlights(params.OutboundParams)
+	if err != nil {
+		log.Error(err)
+		return ctx.SendStatus(fiber.StatusInternalServerError)
+	}
+
+	log.Info("Outbound flights: ", len(outbound_results))
+	search_results.OutboundFlights = outbound_results
+
+	// Найдены только полёты из A в B
+	if params.InboundParams == nil {
+		return ctx.Status(http.StatusOK).JSON(search_results)
+	}
+
+	// Найти полёты в обратную сторону
+	inbound_results, err := controller.scheduleService.SearchFlights(params.InboundParams)
+	if err != nil {
+		log.Error(err)
+		return ctx.SendStatus(fiber.StatusInternalServerError)
+	}
+
+	log.Info("Inbound flights: ", len(inbound_results))
+	search_results.InboundFlights = inbound_results
+
+	return ctx.Status(http.StatusOK).JSON(search_results)
 }

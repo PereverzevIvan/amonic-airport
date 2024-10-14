@@ -18,10 +18,15 @@ type Schedule struct {
 	Confirmed    bool    `json:"confirmed" gorm:"Column:Confirmed"`
 
 	Outbound time.Time `json:"outbound" gorm:"column:Outbound;type:datetime;not null"`
-	Date     string    `gorm:"column:Date;type:date;not null"`
+	Date     string    `gorm:"column:Date;not null"`
 	Time     string    `gorm:"column:Time;not null"`
 }
 
 func (Schedule) TableName() string {
 	return "schedules"
 }
+
+const (
+	KBusinessRatio    float64 = 1.35
+	KFirstClassRation float64 = KBusinessRatio * 1.3
+)

@@ -216,36 +216,208 @@ func (r ScheduleRepo) Edit(schedule *models.Schedule) error {
 	return err
 }
 
-// func (r ScheduleRepo) Update(user *models.User) error {
+// Вспомогательная стуктура для восстановления ответа в SearchFlights
+type FlightNode struct {
+	FlightID      int
+	PrevFlightIdx int
+}
 
-// 	err := r.Conn.Model(&user).
-// 		Select("FirstName", "LastName", "Email", "RoleID", "OfficeID").
-// 		Updates(*user).Error
+const (
+	MAX_TRANSFERS_COUNT           int = 3
+	MINIMUM_TRANSFER_TIME_MINUTES int = 60
+)
 
-// 	if IsUniqueConstraintError(err) {
-// 		return models.ErrDuplicatedEmail
-// 	}
+// SearchFlights - поиск полётов между двумя аэропортами с пересадками
+func (r ScheduleRepo) SearchFlights(params *models.SearchFlightsParams) ([][]*models.Schedule, error) {
+	prev_visited_airports_set := map[int]bool{} // посещенные на прошлых итерациях аэропорты
+	cur_visited_airports_set := map[int]bool{}  // посещенные на текущей итерации аэропорты
 
-// 	if IsForeignKeyConstraintError(err) &&
-// 		strings.Contains(err.Error(), "`FK_Users_Offices` FOREIGN KEY (`OfficeID`) foreignKey `offices` (`ID`))") {
-// 		return models.ErrFKOfficeIDNotFound
-// 	}
+	flights_map := map[int]models.Schedule{} // Полёты по id
 
-// 	return err
-// }
+	prev_flights := []FlightNode{} // массив для восстановления пути
+	cur_flights := []FlightNode{}  // текущие полёты, которые нужно обработать
+	next_flights := []FlightNode{} // следующие полёты, которые нужно обработать. Когда cur_flights заканчивается, то меняем их, а next_flights очищаем,
 
-// func (r ScheduleRepo) UpdateActive(user_id int, is_active bool) error {
-// 	err := r.Conn.Model(&models.User{ID: user_id}).
-// 		Update("Active", is_active).Error
+	var results [][]*models.Schedule // сами полёты от A до B, с возможными перелётами
 
-// 	return err
-// }
+	// Получаем все полёты из пункта A, и добавляем их в очередь
+	schedules, err := r.findInitialFlights(params)
+	if err != nil {
+		return nil, err
+	}
 
-// func (r ScheduleRepo) GetByID(user_id int) (*models.User, error) {
-// 	var user models.User
-// 	err := u.Conn.First(&user, user_id).Error
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	return &user, err
-// }
+	// Заполняем изначальными полётами из пункта А
+	for _, schedule := range schedules {
+		// Если аэропорт прибытия совпадает с аэропортом вылета, то добавляем полёт в результат
+		if schedule.Route.ArrivalAirportID == params.ArrivalAirportID {
+			results = append(results, []*models.Schedule{&schedule})
+			continue
+		}
+		// Добавляем полёт для обработки
+		cur_flights = append(cur_flights, FlightNode{
+			FlightID:      schedule.ID,
+			PrevFlightIdx: -1,
+		})
+		// Запоминаем полёты
+		flights_map[schedule.ID] = schedule
+		// Помечаем аэропорты, как посещенные
+		prev_visited_airports_set[schedule.Route.DepartureAirportID] = true
+		prev_visited_airports_set[schedule.Route.ArrivalAirportID] = true
+
+	}
+
+	// Основной цикл
+	for transfers_count := 0; transfers_count < MAX_TRANSFERS_COUNT; transfers_count++ {
+		if len(cur_flights) == 0 {
+			break
+		}
+
+		for _, cur_flight_node := range cur_flights {
+			cur_schedule := flights_map[cur_flight_node.FlightID]
+
+			// Добавляем текущий перелёт в пути, для восстановления пути
+			prev_flights = append(prev_flights, cur_flight_node)
+
+			// Находим маршруты из пересадочного пункта
+			schedules, err = r.findTransferFlights(&cur_schedule)
+			if err != nil {
+				return nil, err
+			}
+
+			// Обрабатываем новые перелёты
+			for _, schedule := range schedules {
+				// Если мы уже посещали этот аэропорт, на прошлых итерациях, то пропускаем его
+				if _, ok := prev_visited_airports_set[schedule.Route.ArrivalAirportID]; ok {
+					continue
+				}
+
+				// Найден конечный маршрут
+				if schedule.Route.ArrivalAirportID == params.ArrivalAirportID {
+					// Добавляем полёт в результат
+					results = append(
+						results,
+						restoreFlightPath(flights_map, prev_flights, &schedule))
+					continue
+				}
+
+				// Добавляем полёт в мапу
+				if _, ok := flights_map[schedule.ID]; !ok {
+					flights_map[schedule.ID] = schedule
+				}
+
+				// Помечаем посещенный аэропорт
+				cur_visited_airports_set[schedule.Route.ArrivalAirportID] = true
+
+				// Добавляем новый перелёт в очередь
+				next_flights = append(next_flights, FlightNode{
+					FlightID:      schedule.ID,
+					PrevFlightIdx: len(prev_flights) - 1,
+				})
+			}
+		}
+
+		cur_flights = next_flights
+		next_flights = nil
+		for airport_id := range cur_visited_airports_set {
+			prev_visited_airports_set[airport_id] = true
+			// Очищаем посещенные аэропорты на текущей итерации
+			delete(cur_visited_airports_set, airport_id)
+		}
+
+	}
+
+	return results, nil
+}
+
+func restoreFlightPath(
+	flights_map map[int]models.Schedule,
+	prev_flights []FlightNode,
+	cur_schedule *models.Schedule,
+) []*models.Schedule {
+	path := []*models.Schedule{cur_schedule}
+
+	for i := len(prev_flights) - 1; i >= 0; i = prev_flights[i].PrevFlightIdx {
+		cur_flight := flights_map[prev_flights[i].FlightID]
+		path = append(path, &cur_flight)
+	}
+
+	// Переворачиваем массив
+	for i, j := 0, len(path)-1; i < j; i, j = i+1, j-1 {
+		path[i], path[j] = path[j], path[i]
+	}
+
+	return path
+}
+
+func (r *ScheduleRepo) findInitialFlights(params *models.SearchFlightsParams) ([]models.Schedule, error) {
+	var schedules []models.Schedule
+	err := r.Conn.
+		// Debug().
+		Scopes(
+			scopeSearchInitialFlights(params),
+		).
+		Find(&schedules).
+		Error
+
+	if err != nil {
+		return nil, err
+	}
+
+	return schedules, nil
+}
+
+func scopeSearchInitialFlights(params *models.SearchFlightsParams) func(db *gorm.DB) *gorm.DB {
+	return func(db *gorm.DB) *gorm.DB {
+		query := db.
+			InnerJoins("Route").
+			Where("Confirmed = ?", true).
+			Where("Route.DepartureAirportID = ?", params.DepartureAirportID)
+
+		if params.IncreaseSearchInterval {
+			query = query.
+				Where(`schedules.Date BETWEEN
+						DATE_SUB(?, INTERVAL ? DAY)
+						AND DATE_ADD(?, INTERVAL ? DAY)`,
+					params.OutboundDate, 3,
+					params.OutboundDate, 3,
+				)
+		} else {
+			query = query.Where(`schedules.Date = ?`, params.OutboundDate)
+		}
+
+		return query
+	}
+}
+
+func (r *ScheduleRepo) findTransferFlights(cur_schedule *models.Schedule) ([]models.Schedule, error) {
+	var schedules []models.Schedule
+	err := r.Conn.Model(&models.Schedule{}).
+		// Debug().
+		Scopes(
+			scopeSearchTransferFlights(cur_schedule),
+		).
+		Find(&schedules).
+		Error
+
+	if err != nil {
+		return nil, err
+	}
+
+	return schedules, nil
+}
+
+func scopeSearchTransferFlights(schedule *models.Schedule) func(db *gorm.DB) *gorm.DB {
+	return func(db *gorm.DB) *gorm.DB {
+
+		query := db.
+			InnerJoins("Route").
+			Where("Confirmed = ?", true).
+			Where("Route.DepartureAirportID = ?", schedule.Route.ArrivalAirportID).
+			Where(`schedules.Outbound BETWEEN DATE_ADD(?, INTERVAL ? MINUTE) AND DATE_ADD(?, INTERVAL ? DAY)`,
+				schedule.Date[:10]+" "+schedule.Time, schedule.Route.FlightTime+MINIMUM_TRANSFER_TIME_MINUTES,
+				schedule.Date[:10]+" "+schedule.Time, 1,
+			)
+
+		return query
+	}
+}

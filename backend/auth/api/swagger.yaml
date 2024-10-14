@@ -35,6 +35,13 @@ definitions:
       name:
         type: string
     type: object
+  models.CabinType:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
   models.Country:
     properties:
       id:
@@ -124,6 +131,135 @@ definitions:
       total_rows_cnt:
         type: integer
     type: object
+  models.SearchFlightsParams:
+    properties:
+      from:
+        type: integer
+      increase_search_interval:
+        type: boolean
+      outbound_date:
+        type: string
+      to:
+        type: integer
+    type: object
+  models.SearchOutboundAndInboundFlightResult:
+    properties:
+      inbound_flights:
+        items:
+          items:
+            $ref: '#/definitions/models.Schedule'
+          type: array
+        type: array
+      outbound_flights:
+        items:
+          items:
+            $ref: '#/definitions/models.Schedule'
+          type: array
+        type: array
+    type: object
+  models.SearchOutboundAndInboundFlightsParams:
+    properties:
+      inbound:
+        $ref: '#/definitions/models.SearchFlightsParams'
+      outbound:
+        $ref: '#/definitions/models.SearchFlightsParams'
+    type: object
+  models.Ticket:
+    properties:
+      booking_reference:
+        type: string
+      cabin_type_id:
+        type: integer
+      cabinType:
+        $ref: '#/definitions/models.CabinType'
+      confirmed:
+        type: boolean
+      email:
+        type: string
+      first_name:
+        type: string
+      id:
+        type: integer
+      last_name:
+        type: string
+      passport_country_id:
+        type: integer
+      passport_number:
+        type: string
+      phone:
+        type: string
+      schedule:
+        $ref: '#/definitions/models.Schedule'
+      schedule_id:
+        type: integer
+      user_id:
+        type: integer
+    type: object
+  models.TicketIDsParams:
+    properties:
+      tickets:
+        items:
+          type: integer
+        type: array
+    type: object
+  models.TicketPassengerInfo:
+    properties:
+      birthday:
+        type: string
+      first_name:
+        type: string
+      last_name:
+        type: string
+      passport_country_id:
+        type: integer
+      passport_number:
+        type: string
+      phone:
+        description: Email string `json:"email"`
+        type: string
+    type: object
+  models.TicketsBookResult:
+    properties:
+      tickets:
+        items:
+          $ref: '#/definitions/models.Ticket'
+        type: array
+      total_cost:
+        type: number
+    type: object
+  models.TicketsBookingParams:
+    properties:
+      cabin_type:
+        type: integer
+      inbound_schedules:
+        items:
+          type: integer
+        type: array
+      outbound_schedules:
+        items:
+          type: integer
+        type: array
+      passengers:
+        items:
+          $ref: '#/definitions/models.TicketPassengerInfo'
+        type: array
+    type: object
+  models.TicketsCountRemainingSeatsParams:
+    properties:
+      schedule_ids:
+        items:
+          type: integer
+        type: array
+    type: object
+  models.TicketsRemainingSeatsCount:
+    properties:
+      business_seats:
+        type: integer
+      economy_seats:
+        type: integer
+      first_class_seats:
+        type: integer
+    type: object
   models.User:
     properties:
       active:
@@ -191,6 +327,21 @@ paths:
       summary: Get All Airports
       tags:
       - Airports
+  /countries:
+    get:
+      description: Получение стран
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Country'
+            type: array
+        "500":
+          description: Internal Server Error
+      summary: Get All Countries
+      tags:
+      - Country
   /country/{id}:
     get:
       consumes:
@@ -439,7 +590,6 @@ paths:
     post:
       consumes:
       - application/json
-      description: Загрузить CSV файл по ключу "file" (name="file")
       produces:
       - application/json
       responses:
@@ -455,6 +605,105 @@ paths:
         полетов
       tags:
       - Schedules
+  /search-flights:
+    post:
+      consumes:
+      - application/json
+      description: Загрузить CSV файл по ключу "file" (name="file")
+      parameters:
+      - description: example
+        in: body
+        name: SearchOutboundAndInboundFlightsParams
+        required: true
+        schema:
+          $ref: '#/definitions/models.SearchOutboundAndInboundFlightsParams'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.SearchOutboundAndInboundFlightResult'
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+      summary: Поиск полётов между двумя аэропортами с пересадками
+      tags:
+      - Schedules
+  /tickets/booking:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: example
+        in: body
+        name: TicketsBookingParams
+        required: true
+        schema:
+          $ref: '#/definitions/models.TicketsBookingParams'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.TicketsBookResult'
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+      summary: Book tickets
+      tags:
+      - Tickets
+  /tickets/confirm:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: example
+        in: body
+        name: TicketIDsParams
+        required: true
+        schema:
+          $ref: '#/definitions/models.TicketIDsParams'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+      summary: Confirm tickets
+      tags:
+      - Tickets
+  /tickets/remaining-seats-count:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: example
+        in: body
+        name: TicketsCountRemainingSeatsParams
+        required: true
+        schema:
+          $ref: '#/definitions/models.TicketsCountRemainingSeatsParams'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.TicketsRemainingSeatsCount'
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+      summary: Check enough tickets
+      tags:
+      - Tickets
   /user-sessions/:
     get:
       consumes:

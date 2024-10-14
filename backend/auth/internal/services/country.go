@@ -5,6 +5,7 @@ import "gitflic.ru/project/pereverzevivan/biznes-processy-laba-1/backend/models"
 type CountryRepo interface {
 	GetByID(id int) (*models.Country, error)
 	GetByName(name string) (*models.Country, error)
+	GetAll() ([]*models.Country, error)
 }
 
 type CountryService struct {
@@ -21,4 +22,7 @@ func (s CountryService) GetByID(id int) (*models.Country, error) {
 
 func (s CountryService) GetByName(name string) (*models.Country, error) {
 	return s.CountryRepo.GetByName(name)
+}
+func (s CountryService) GetAll() ([]*models.Country, error) {
+	return s.CountryRepo.GetAll()
 }

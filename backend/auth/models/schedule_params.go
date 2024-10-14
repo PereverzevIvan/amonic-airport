@@ -231,3 +231,75 @@ func ParseScheduleAddEditCommandFromCSVRecord(record []string) (*ScheduleAddEdit
 
 // 	return nil
 // }
+
+type SearchFlightsParams struct {
+	DepartureAirportID     int    `json:"from"`
+	ArrivalAirportID       int    `json:"to"`
+	OutboundDate           string `json:"outbound_date"`
+	IncreaseSearchInterval bool   `json:"increase_search_interval"`
+}
+
+func (params *SearchFlightsParams) Validate() error {
+	if params == nil {
+		return nil
+	}
+
+	if params.DepartureAirportID <= 0 || params.ArrivalAirportID <= 0 {
+		return fmt.Errorf("departure_airport_id or arrival_airport_id is required")
+	}
+	if params.DepartureAirportID == params.ArrivalAirportID {
+		return fmt.Errorf("departure_airport_id and arrival_airport_id must be different")
+	}
+
+	_, err := time.Parse("2006-01-02", params.OutboundDate)
+	if err != nil {
+		return fmt.Errorf("invalid outbound_date: %v", params.OutboundDate)
+	}
+
+	return nil
+}
+
+type SearchOutboundAndInboundFlightsParams struct {
+	OutboundParams *SearchFlightsParams `json:"outbound"`
+	InboundParams  *SearchFlightsParams `json:"inbound"`
+}
+
+func (params *SearchOutboundAndInboundFlightsParams) Validate() error {
+	if params == nil {
+		return fmt.Errorf("search_outbund_and_inbound_flights_params is required")
+	}
+
+	if params.OutboundParams == nil {
+		return fmt.Errorf("'outboud' params is required")
+	}
+	err := params.OutboundParams.Validate()
+	if err != nil {
+		return err
+	}
+
+	if params.InboundParams != nil {
+		// Установить аэропорты на обратную сторону из входящих параметров
+		params.InboundParams.DepartureAirportID = params.OutboundParams.ArrivalAirportID
+		params.InboundParams.ArrivalAirportID = params.OutboundParams.DepartureAirportID
+
+		err = params.InboundParams.Validate()
+		if err != nil {
+			return err
+		}
+
+		// Проверить, что дата вылета <= даты прилета
+		outbound_date, _ := time.Parse("2006-01-02", params.OutboundParams.OutboundDate)
+		inbound_date, _ := time.Parse("2006-01-02", params.InboundParams.OutboundDate)
+
+		if outbound_date.After(inbound_date) {
+			return fmt.Errorf("inbound_date must be after outbound_date")
+		}
+	}
+
+	return nil
+}
+
+type SearchOutboundAndInboundFlightResult struct {
+	OutboundFlights [][]*Schedule `json:"outbound_flights"`
+	InboundFlights  [][]*Schedule `json:"inbound_flights"`
+}
