@@ -17,6 +17,16 @@ func NewTicketRepo(conn *gorm.DB) TicketRepo {
 	}
 }
 
+func (r TicketRepo) GetByID(ticket_id int) (*models.Ticket, error) {
+	var ticket models.Ticket
+	err := r.Conn.First(&ticket, ticket_id).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return &ticket, nil
+}
+
 func (r TicketRepo) CountTakenSeatsForShedule(schedule_id int, cabin_type int) (int, error) {
 	var count int64
 
@@ -55,7 +65,6 @@ func (r TicketRepo) BookTickets(params *models.TicketsBookingParams) ([]*models.
 				PassportNumber:    passenger.PassportNumber,
 				PassportCountryID: passenger.PassportCountryID,
 				BookingReference:  booking_reference,
-				Email:             nil,
 				Confirmed:         false,
 			}
 
@@ -134,4 +143,35 @@ func (r TicketRepo) ChangeTicketsStatus(ticket_ids []int, set_confirmed bool) er
 	}
 
 	return tx.Commit().Error
+}
+
+func (r TicketRepo) GetAll(params *models.TicketsGetAllParams) ([]*models.Ticket, error) {
+	tickets := []*models.Ticket{}
+
+	err := r.Conn.
+		Debug().
+		Scopes(
+			scopeTicketsGetAll(params),
+		).
+		Model(&models.Ticket{}).
+		InnerJoins("Schedule").
+		InnerJoins("Schedule.Route").
+		// Select("schedules.*, tickets.BookingReference").
+		// Joins("INNER JOIN tickets ON tickets.ScheduleID = schedules.ID").
+		Find(&tickets).
+		Error
+
+	if err != nil {
+		return nil, err
+	}
+	return tickets, nil
+}
+
+func scopeTicketsGetAll(params *models.TicketsGetAllParams) func(db *gorm.DB) *gorm.DB {
+	return func(db *gorm.DB) *gorm.DB {
+		if params.BookingReference != "" {
+			db = db.Where("tickets.BookingReference = ?", params.BookingReference)
+		}
+		return db
+	}
 }

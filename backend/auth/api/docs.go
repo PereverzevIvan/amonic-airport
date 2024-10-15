@@ -51,6 +51,63 @@ const docTemplate = `{
                 }
             }
         },
+        "/amenities": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Amenity"
+                ],
+                "summary": "Получить все услуги",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Amenity"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/cabin-type-default-amenities": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Amenity"
+                ],
+                "summary": "Получить включенные услуги для типа кабины",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "name": "cabinTypeID",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/countries": {
             "get": {
                 "description": "Получение стран",
@@ -511,6 +568,70 @@ const docTemplate = `{
                 }
             }
         },
+        "/ticket-amenities": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Amenity"
+                ],
+                "summary": "Получить купленные услуги для билета",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "name": "ticketID",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.AmenityTicket"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/tickets": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Tickets"
+                ],
+                "summary": "Get all tickets",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "name": "booking_reference",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            }
+        },
         "/tickets/booking": {
             "post": {
                 "consumes": [
@@ -866,6 +987,37 @@ const docTemplate = `{
                 }
             }
         },
+        "models.Amenity": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "price": {
+                    "type": "number"
+                },
+                "service": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.AmenityTicket": {
+            "type": "object",
+            "properties": {
+                "amenity": {
+                    "$ref": "#/definitions/models.Amenity"
+                },
+                "amenity_id": {
+                    "type": "integer"
+                },
+                "price": {
+                    "type": "number"
+                },
+                "ticket_id": {
+                    "type": "integer"
+                }
+            }
+        },
         "models.CabinType": {
             "type": "object",
             "properties": {
@@ -1065,6 +1217,59 @@ const docTemplate = `{
                 }
             }
         },
+        "models.Summary": {
+            "type": "object",
+            "properties": {
+                "average_daily_flight_time_minutes": {
+                    "type": "integer"
+                },
+                "busiest_day": {
+                    "type": "string"
+                },
+                "busiest_day_number_of_passengers": {
+                    "type": "integer"
+                },
+                "most_quiet_day": {
+                    "type": "string"
+                },
+                "most_quiet_day_number_of_passengers": {
+                    "type": "integer"
+                },
+                "number_cancelled_flights": {
+                    "type": "integer"
+                },
+                "number_confirmed_flights": {
+                    "type": "integer"
+                },
+                "revenue_from_ticket_sales": {
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                },
+                "time_taken_to_generate_report": {
+                    "type": "integer"
+                },
+                "top_customer_by_purchased_tickets": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "top_offices": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "weekly_report_of_percentage_of_empty_seats": {
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                }
+            }
+        },
         "models.Ticket": {
             "type": "object",
             "properties": {
@@ -1079,9 +1284,6 @@ const docTemplate = `{
                 },
                 "confirmed": {
                     "type": "boolean"
-                },
-                "email": {
-                    "type": "string"
                 },
                 "first_name": {
                     "type": "string"

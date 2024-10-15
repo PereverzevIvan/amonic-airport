@@ -10,11 +10,12 @@ func (e Error) Error() string {
 
 // Declare constant errors
 const (
-	ErrNotFound           = Error("not found error")
-	ErrUnique             = Error("unique constraint error")
-	ErrFK                 = Error("foreign key error")
-	ErrDuplicatedEmail    = Error("duplicated email error")
-	ErrFKOfficeIDNotFound = Error("office with this id not found")
-	ErrCSVMissingFields   = Error("missing fields in csv file")
-	ErrNoTicketsAvailable = Error("no tickets available")
+	ErrNotFound                     = Error("not found error")
+	ErrUnique                       = Error("unique constraint error")
+	ErrFK                           = Error("foreign key error")
+	ErrDuplicatedEmail              = Error("duplicated email error")
+	ErrFKOfficeIDNotFound           = Error("office with this id not found")
+	ErrCSVMissingFields             = Error("missing fields in csv file")
+	ErrNoTicketsAvailable           = Error("no tickets available")
+	ErrCantEditAmenitiesTimeExpired = Error("can't edit amenities time expired")
 )

@@ -1,4 +1,9 @@
 DROP TABLE IF EXISTS `schema_migrations`;
+-- session 5 tables
+
+DROP TABLE IF EXISTS `amenitiestickets`;
+DROP TABLE IF EXISTS `amenitiescabintype`;
+DROP TABLE IF EXISTS `amenities`;
 
 -- session 3 tables
 DROP TABLE IF EXISTS `tickets`;

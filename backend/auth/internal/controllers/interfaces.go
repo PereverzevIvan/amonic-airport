@@ -64,10 +64,28 @@ type ticketService interface {
 	CountRemainingSeats(params *models.TicketsCountRemainingSeatsParams) (*models.TicketsRemainingSeatsCount, error)
 	BookTickets(params *models.TicketsBookingParams) ([]*models.Ticket, error)
 	ChangeTicketsStatus(ticket_ids []int, set_confirmed bool) error
+	GetAll(booking_reference *models.TicketsGetAllParams) ([]*models.Ticket, error)
 }
 
 type CountryService interface {
 	GetByID(id int) (*models.Country, error)
 	GetByName(title string) (*models.Country, error)
 	GetAll() ([]*models.Country, error)
+}
+
+type amenityService interface {
+	GetAll() ([]*models.Amenity, error)
+	CountAll(params *models.AmenityCountAllParams) (*models.AmenityCountAllResult, error)
+	GetCabinTypeDefaultAmenities(params *models.GetCabinTypeDefaultAmenitiesParams) ([]int, error)
+	GetTicketAmenities(params *models.GetTicketAmenitiesParams) ([]*models.AmenityTicket, error)
+	EditTicketAmenities(params *models.EditTicketAmenitiesParams) error
+}
+
+type summaryService interface {
+	GetFlightsInfo(params *models.SummaryParams, summary *models.Summary) error
+	GetTopCustomersInfo(params *models.SummaryParams, summary *models.Summary) error
+	GetTopFlightsInfo(params *models.SummaryParams, summary *models.Summary) error
+	GetTopOfficesInfo(params *models.SummaryParams, summary *models.Summary) error
+	GetRevenueFromTicketSales(params *models.SummaryParams, summary *models.Summary) error
+	GetWeeklyReportOfPercentageOfEmptySeats(params *models.SummaryParams, summary *models.Summary) error
 }

@@ -111,3 +111,17 @@ type TicketsBookResult struct {
 	Tickets   []*Ticket `json:"tickets"`
 	TotalCost float64   `json:"total_cost"`
 }
+
+type TicketsGetAllParams struct {
+	BookingReference string `json:"booking_reference"`
+}
+
+func (params *TicketsGetAllParams) Validate() error {
+	if params.BookingReference == "" {
+		return fmt.Errorf("booking_reference is required")
+	}
+	if len(params.BookingReference) != 6 {
+		return fmt.Errorf("booking_reference must be 6 size string")
+	}
+	return nil
+}

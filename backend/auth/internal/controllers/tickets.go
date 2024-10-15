@@ -31,6 +31,7 @@ func AddTicketControllerRoutes(
 	(*api).Post("/tickets/remaining-seats-count", controller.RemainingSeatsCount, authMiddleware.IsActive)
 	(*api).Post("/tickets/booking", controller.BookTickets, authMiddleware.IsActive)
 	(*api).Post("/tickets/confirm", controller.ConfirmTickets, authMiddleware.IsActive)
+	(*api).Get("/tickets", controller.GetAll, authMiddleware.IsActive)
 }
 
 // @Summary      Check enough tickets
@@ -163,3 +164,33 @@ func (controller *TicketController) ConfirmTickets(ctx fiber.Ctx) error {
 // func (controller *TicketController) CancelBooking(ctx fiber.Ctx) error {
 // 	return ctx.SendStatus(http.StatusNotImplemented)
 // }
+
+// @Summary      Get all tickets
+// @Tags         Tickets
+// @Accept       json
+// @Produce      json
+// @Param        TicketsGetAllParams query  models.TicketsGetAllParams true "example"
+// @Success      200
+// @Failure      400
+// @Failure      404
+// @Router       /tickets [get]
+func (controller *TicketController) GetAll(ctx fiber.Ctx) error {
+	params := models.TicketsGetAllParams{}
+
+	if err := ctx.Bind().Query(&params); err != nil {
+		log.Error(err)
+		return ctx.Status(http.StatusBadRequest).SendString(err.Error())
+	}
+
+	if err := params.Validate(); err != nil {
+		return ctx.Status(http.StatusBadRequest).SendString(err.Error())
+	}
+
+	ticket_with_schedules, err := controller.ticketService.GetAll(&params)
+	if err != nil {
+		log.Error(err)
+		return ctx.SendStatus(http.StatusInternalServerError)
+	}
+
+	return ctx.Status(http.StatusOK).JSON(ticket_with_schedules)
+}

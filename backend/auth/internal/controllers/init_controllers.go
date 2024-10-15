@@ -49,4 +49,12 @@ func InitControllers(app *fiber.App, conn *gorm.DB, jwtConfig *config.ConfigJWT)
 	ticketRepo := mysql_repo.NewTicketRepo(conn)
 	ticketService := service.NewTicketService(ticketRepo, scheduleRepo)
 	AddTicketControllerRoutes(&api, jwtUseCase, scheduleService, ticketService, authMiddleware)
+
+	amenityRepo := mysql_repo.NewAmenityRepo(conn)
+	amenityService := service.NewAmenityService(amenityRepo, ticketRepo, scheduleRepo)
+	AddAmenityControllerRoutes(&api, jwtUseCase, amenityService, authMiddleware)
+
+	summaryRepo := mysql_repo.NewSummaryRepo(conn)
+	summaryService := service.NewSummaryService(summaryRepo)
+	AddSummaryControllerRoutes(&api, jwtUseCase, summaryService, authMiddleware)
 }

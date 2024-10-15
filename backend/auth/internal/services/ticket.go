@@ -8,6 +8,8 @@ type TicketRepo interface {
 	CountTakenSeatsForShedule(schedule_id int, cabin_type int) (int, error)
 	BookTickets(params *models.TicketsBookingParams) ([]*models.Ticket, error)
 	ChangeTicketsStatus(ticket_ids []int, set_confirmed bool) error
+	GetAll(params *models.TicketsGetAllParams) ([]*models.Ticket, error)
+	GetByID(ticket_id int) (*models.Ticket, error)
 }
 
 type ticketService struct {
@@ -100,6 +102,14 @@ func (s ticketService) BookTickets(params *models.TicketsBookingParams) ([]*mode
 
 func (s ticketService) ChangeTicketsStatus(ticket_ids []int, set_confirmed bool) error {
 	return s.ticketRepo.ChangeTicketsStatus(ticket_ids, set_confirmed)
+}
+
+// FindSchedulesByBookingReference returns list of schedules associated with given booking reference.
+//
+// This is used to obtain information about the flight (departure/arrival dates, route, etc.)
+// associated with the tickets booked by the user with given booking reference.
+func (s ticketService) GetAll(params *models.TicketsGetAllParams) ([]*models.Ticket, error) {
+	return s.ticketRepo.GetAll(params)
 }
 
 // func (s ticketService) GetAll(params *models.TicketsParams) (*[]models.Ticket, error) {

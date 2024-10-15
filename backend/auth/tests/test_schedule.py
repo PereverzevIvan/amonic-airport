@@ -34,7 +34,7 @@ def test_get_schedules_params(api_url):
 
     schedule_client.get_schedules(schedule.SchedulesParams(flight_number="49"))
 
-    schedule_client.get_schedules(schedule.SchedulesParams(outbound="2017-10-04"))
+    schedule_client.get_schedules(schedule.SchedulesParams(outbound="2017-12-05"))
 
     schedule_client.get_schedules(schedule.SchedulesParams(departure_airport_id=2))
     schedule_client.get_schedules(schedule.SchedulesParams(arrival_airport_id=4))

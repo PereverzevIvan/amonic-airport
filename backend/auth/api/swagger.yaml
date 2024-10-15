@@ -35,6 +35,26 @@ definitions:
       name:
         type: string
     type: object
+  models.Amenity:
+    properties:
+      id:
+        type: integer
+      price:
+        type: number
+      service:
+        type: string
+    type: object
+  models.AmenityTicket:
+    properties:
+      amenity:
+        $ref: '#/definitions/models.Amenity'
+      amenity_id:
+        type: integer
+      price:
+        type: number
+      ticket_id:
+        type: integer
+    type: object
   models.CabinType:
     properties:
       id:
@@ -164,6 +184,41 @@ definitions:
       outbound:
         $ref: '#/definitions/models.SearchFlightsParams'
     type: object
+  models.Summary:
+    properties:
+      average_daily_flight_time_minutes:
+        type: integer
+      busiest_day:
+        type: string
+      busiest_day_number_of_passengers:
+        type: integer
+      most_quiet_day:
+        type: string
+      most_quiet_day_number_of_passengers:
+        type: integer
+      number_cancelled_flights:
+        type: integer
+      number_confirmed_flights:
+        type: integer
+      revenue_from_ticket_sales:
+        items:
+          type: number
+        type: array
+      time_taken_to_generate_report:
+        type: integer
+      top_customer_by_purchased_tickets:
+        items:
+          type: string
+        type: array
+      top_offices:
+        items:
+          type: string
+        type: array
+      weekly_report_of_percentage_of_empty_seats:
+        items:
+          type: number
+        type: array
+    type: object
   models.Ticket:
     properties:
       booking_reference:
@@ -174,8 +229,6 @@ definitions:
         $ref: '#/definitions/models.CabinType'
       confirmed:
         type: boolean
-      email:
-        type: string
       first_name:
         type: string
       id:
@@ -327,6 +380,42 @@ paths:
       summary: Get All Airports
       tags:
       - Airports
+  /amenities:
+    get:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Amenity'
+            type: array
+      summary: Получить все услуги
+      tags:
+      - Amenity
+  /cabin-type-default-amenities:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - in: query
+        name: cabinTypeID
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              type: integer
+            type: array
+      summary: Получить включенные услуги для типа кабины
+      tags:
+      - Amenity
   /countries:
     get:
       description: Получение стран
@@ -631,6 +720,46 @@ paths:
       summary: Поиск полётов между двумя аэропортами с пересадками
       tags:
       - Schedules
+  /ticket-amenities:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - in: query
+        name: ticketID
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.AmenityTicket'
+            type: array
+      summary: Получить купленные услуги для билета
+      tags:
+      - Amenity
+  /tickets:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - in: query
+        name: booking_reference
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+      summary: Get all tickets
+      tags:
+      - Tickets
   /tickets/booking:
     post:
       consumes:
