@@ -22,6 +22,12 @@ const links = [
     needRole: "admin",
     title: "Расписания",
   },
+  {
+    path: rp.FLIGHT_BOOKING_ROUTE,
+    needAuth: true,
+    needRole: "admin",
+    title: "Бронирование билетов",
+  },
 ];
 
 function Navbar() {

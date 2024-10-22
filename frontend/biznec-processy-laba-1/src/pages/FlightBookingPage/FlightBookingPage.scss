@@ -1,4 +1,6 @@
-.schedule-page {
+@use "../../scss/variables" as v;
+
+.flight-booking-page {
   padding: 20px 30px 50px 30px;
   display: flex;
   flex-direction: column;
@@ -10,10 +12,10 @@
   }
 
   .under-table-line {
+    margin-bottom: -15px;
     width: 100%;
     display: flex;
-    justify-content: center;
-    gap: 30px;
+    justify-content: space-between;
   }
 
   .form {
@@ -38,40 +40,38 @@
         min-width: 200px;
       }
     }
-  }
-}
 
-.edit-schedule-form {
-  gap: 20px !important;
-
-  .form__fieldset {
-    display: flex;
-    justify-content: space-around;
-    // gap: 30px;
-    .form__label {
-      // display: inline;
-    }
-  }
-
-  .form__layout {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    .form__container {
-      // width: 100%;
+    .flights-list {
       display: flex;
-      gap: 10px;
+      flex-direction: column;
+      gap: 5px;
+      padding: 5px;
+      max-height: 100px;
+      overflow-y: auto;
 
-      .form__input {
-        flex-grow: 1;
+      .flights-list__item {
+        display: flex;
+        padding: 5px 10px;
+        justify-content: space-between;
+        border: 2px solid v.$dark-blue-cl;
+        border-radius: 5px;
       }
     }
 
-    .form__button-box {
-      width: 100%;
-      justify-content: end;
-      gap: 20px;
+    .tickets-confirm-form {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  .passengers-form {
+    max-width: 60%;
+    .form__container {
+      display: flex;
+    }
+
+    fieldset {
+      display: flex;
+      justify-content: space-between;
     }
   }
 }

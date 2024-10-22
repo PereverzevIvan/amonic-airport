@@ -8,6 +8,7 @@ import * as rp from "../../global/routerPaths/routerPaths";
 import { ProtectedRoute } from "./ProtectedRoute";
 import { BaseErrorPage } from "../../pages/ErrorPages/BaseErorrPage/BaseErrorPage";
 import SchedulePage from "../../pages/SchedulePage/SchedulePage";
+import FlightBookingPage from "../../pages/FlightBookingPage/FlightBookingPage";
 
 function Router() {
   return (
@@ -36,6 +37,14 @@ function Router() {
           element={
             <ProtectedRoute requiredRole={"admin"}>
               <SchedulePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path={rp.FLIGHT_BOOKING_ROUTE}
+          element={
+            <ProtectedRoute requiredRole={"admin"}>
+              <FlightBookingPage />
             </ProtectedRoute>
           }
         />

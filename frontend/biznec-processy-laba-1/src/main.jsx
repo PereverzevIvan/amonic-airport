@@ -7,15 +7,15 @@ import { ApiProvider } from "./context/apiContext";
 import { AuthProvider } from "./context/authContext";
 
 createRoot(document.getElementById("root")).render(
-  <StrictMode>
-    <BrowserRouter>
-      <AuthProvider>
-        <ApiProvider>
-          <ToastProvider>
-            <App />
-          </ToastProvider>
-        </ApiProvider>
-      </AuthProvider>
-    </BrowserRouter>
-  </StrictMode>,
+  //<StrictMode>
+  <BrowserRouter>
+    <AuthProvider>
+      <ApiProvider>
+        <ToastProvider>
+          <App />
+        </ToastProvider>
+      </ApiProvider>
+    </AuthProvider>
+  </BrowserRouter>,
+  //</StrictMode>,
 );

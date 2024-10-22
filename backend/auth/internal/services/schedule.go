@@ -148,11 +148,11 @@ func (s scheduleService) SearchFlights(params *models.SearchFlightsParams) ([][]
 		return nil, err
 	}
 
-	for i := 0; i < len(results); i++ {
-		for j := 0; j < len(results[i]); j++ {
-			results[i][j].Route = nil
-		}
-	}
+	// for i := 0; i < len(results); i++ {
+	// 	for j := 0; j < len(results[i]); j++ {
+	// 		results[i][j].Route = nil
+	// 	}
+	// }
 
 	return results, nil
 }

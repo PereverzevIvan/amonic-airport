@@ -83,7 +83,7 @@ function LoginForm() {
 
   return (
     <>
-      <form action="" onSubmit={handleSubmit} className="form">
+      <form onSubmit={handleSubmit} className="form login-form">
         {errorMessage && (
           <div className="message message_error">{errorMessage}</div>
         )}

@@ -6,8 +6,10 @@ function Modal({
   show = false,
   handleClose,
   title = "Модальное окно",
+  sub = false,
 }) {
   const showHideClassName = show ? "modal modal_showed" : "modal modal_hidden";
+  const subModalClass = sub ? "modal_sub" : "";
 
   useEffect(() => {
     if (show) {
@@ -24,7 +26,7 @@ function Modal({
 
   return (
     <>
-      <div className={showHideClassName}>
+      <div className={`${showHideClassName} ${subModalClass}`}>
         <div className="modal__window">
           <div className="modal__header">
             <p className="common-text common-text_big modal_title">{title}</p>

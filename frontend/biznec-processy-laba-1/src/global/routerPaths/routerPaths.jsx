@@ -4,6 +4,7 @@ export const LOGOUT_ROUTE = "/logout";
 export const ADMIN_HOME_ROUTE = "/admin-profile";
 export const USER_HOME_ROUTE = "/user-profile";
 export const SCHEDULE_ROUTE = "/shedule";
+export const FLIGHT_BOOKING_ROUTE = "/flights";
 
 export const FORBIDDEN_ERROR_ROUTE = "/forbidden-error";
 export const NOT_FOUND_ERROR_ROUTE = "/not-found-error";

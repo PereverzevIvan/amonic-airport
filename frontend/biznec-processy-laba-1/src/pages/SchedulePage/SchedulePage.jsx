@@ -6,6 +6,7 @@ import {
   changeScheduleConfirmed,
   getSchedules,
   updateScheduleByID,
+  UploadFileWithSchedules,
 } from "../../api/schedulesApi";
 import { useApi } from "../../context/apiContext.jsx";
 import {
@@ -26,16 +27,6 @@ function calculateBisnessAndFirstClassPrice(economyPrice) {
     businessClass: businessPrice,
     firstClass: firstClassPrice,
   };
-}
-
-function sortFlightSchedule(schedule) {
-  return schedule.sort((a, b) => {
-    // Сравниваем даты
-    const dateA = new Date(a.outbound);
-    const dateB = new Date(b.outbound);
-
-    return dateA - dateB; // Возвращаем разницу для сортировки
-  });
 }
 
 function SchedulePage() {
@@ -60,16 +51,6 @@ function SchedulePage() {
   const [showImportFileModal, setShowImportFileModal] = useState(false);
 
   const { addToast } = useToast();
-
-  function clearFiltersAndSortData() {
-    setFiltersAndSortData({
-      outbound: "",
-      flight_number: 0,
-      from: "",
-      to: "",
-      sort_by: "",
-    });
-  }
 
   function handleClickOnRow(index) {
     if (index == selectedRow) {
@@ -96,7 +77,6 @@ function SchedulePage() {
       .then((response) => {
         if (response.status == 200) {
           setAirports(response.data);
-          addToast("Аэропорты получены");
           console.log("Аэропорты получены");
         }
       })
@@ -145,7 +125,6 @@ function SchedulePage() {
       .then((response) => {
         if (response.status == 200) {
           setSchedules(response.data);
-          addToast("Расписание получено");
           console.log("Расписание получено");
         }
       })
@@ -632,44 +611,35 @@ function ImportFileModal({ show, handleClose }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!file) {
-      alert("Please select a file before importing.");
+      addToast("Выберите файл", error);
       return;
     }
 
     setIsSubmitting(true);
 
-    // Создаем FormData для отправки файла
-    const formData = new FormData();
-    formData.append("file", file);
+    UploadFileWithSchedules(apiClient, file)
+      .then((response) => {
+        const {
+          successful_rows_cnt,
+          duplicated_rows_cnt,
+          missing_fields_rows_cnt,
+        } = response.data;
 
-    try {
-      // Отправка данных на сервер через axios
-      const response = await apiClient.post("/schedules/upload", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
+        setResults({
+          success: successful_rows_cnt,
+          duplicates: duplicated_rows_cnt,
+          missingFields: missing_fields_rows_cnt,
+        });
+
+        addToast("Файл успешно импортирован");
+      })
+      .catch((error) => {
+        console.error("Error uploading file:", error);
+        addToast("Не удалось импортировать файл", "error");
+      })
+      .finally(() => {
+        setIsSubmitting(false);
       });
-
-      // Получаем данные о результатах с сервера и обновляем state
-      const {
-        successful_rows_cnt,
-        duplicated_rows_cnt,
-        missing_fields_rows_cnt,
-      } = response.data;
-
-      setResults({
-        success: successful_rows_cnt,
-        duplicates: duplicated_rows_cnt,
-        missingFields: missing_fields_rows_cnt,
-      });
-
-      addToast("Файл успешно импортирован");
-    } catch (error) {
-      console.error("Error uploading file:", error);
-      addToast("Не удалось импортировать файл", "error");
-    } finally {
-      setIsSubmitting(false);
-    }
   };
 
   return (
