@@ -18,4 +18,6 @@ const (
 	ErrCSVMissingFields             = Error("missing fields in csv file")
 	ErrNoTicketsAvailable           = Error("no tickets available")
 	ErrCantEditAmenitiesTimeExpired = Error("can't edit amenities time expired")
+	ErrFailedToOpenFile             = Error("failed to open file")
+	ErrFailedToParseDateFromName    = Error("failed to parse date from name")
 )

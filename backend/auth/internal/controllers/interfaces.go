@@ -89,3 +89,22 @@ type summaryService interface {
 	GetRevenueFromTicketSales(params *models.SummaryParams, summary *models.Summary) error
 	GetWeeklyReportOfPercentageOfEmptySeats(params *models.SummaryParams, summary *models.Summary) error
 }
+
+type surveyService interface {
+	AddSurveyFromCSV(file *multipart.FileHeader) error
+	GetAnswers(params *models.SurveyAnswersParams) ([]models.SurveyAnswerResult, error)
+}
+
+type GroupService interface {
+	GetAll() ([]models.Group, error)
+}
+type GroupValueService interface {
+	GetAll() ([]models.GroupValue, error)
+}
+
+type QuestionService interface {
+	GetAll() ([]models.Question, error)
+}
+type QuestionAnswerService interface {
+	GetAll() ([]models.QuestionAnswer, error)
+}

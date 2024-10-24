@@ -57,4 +57,13 @@ func InitControllers(app *fiber.App, conn *gorm.DB, jwtConfig *config.ConfigJWT)
 	summaryRepo := mysql_repo.NewSummaryRepo(conn)
 	summaryService := service.NewSummaryService(summaryRepo)
 	AddSummaryControllerRoutes(&api, jwtUseCase, summaryService, authMiddleware)
+
+	surveyRepo := mysql_repo.NewSurveyRepo(conn)
+	groupRepe := mysql_repo.NewGroupRepo(conn)
+	groupValueRepo := mysql_repo.NewGroupValueRepo(conn)
+	questionRepo := mysql_repo.NewQuestionRepo(conn)
+	questionAnswerRepo := mysql_repo.NewQuestionAnswerRepo(conn)
+
+	surveyService := service.NewSurveyService(surveyRepo, groupRepe, groupValueRepo, questionRepo, questionAnswerRepo)
+	AddSurveyControllerRoutes(&api, jwtUseCase, surveyService, groupRepe, groupValueRepo, questionRepo, questionAnswerRepo, authMiddleware)
 }
