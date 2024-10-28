@@ -1,0 +1,61 @@
+.summary-page {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 10px;
+}
+
+.summary-report {
+  padding: 10px;
+  border: 1px solid #000;
+  box-sizing: border-box;
+  background-color: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 10px;
+
+  .content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+
+    .section {
+      border: 1px solid #000;
+      padding: 10px;
+      display: grid;
+      gap: 10px;
+      grid-template-rows: 1fr auto;
+
+      .common-text_big {
+        // padding-bottom: 3px;
+        border-bottom: 1px solid black;
+      }
+    }
+  }
+
+  .report-time {
+    text-align: center;
+  }
+
+  .close-button {
+    display: block;
+    width: 100px;
+    margin: 10px auto;
+    padding: 5px;
+    font-size: 14px;
+    cursor: pointer;
+    border: 1px solid #000;
+    background: #f0f0f0;
+    text-align: center;
+
+    &:hover {
+      background: #ddd;
+    }
+  }
+}
+
+ol {
+  list-style-position: inside;
+}

@@ -32,13 +32,14 @@ func AddSummaryControllerRoutes(
 
 // @Summary      Generate 30 days summary
 // @Description  Generate 30 days summary
-// @Tags         Summary
+// @Tags         Airline Summary
 // @Accept       json
 // @Produce      json
 // @Param        SummaryParams query  models.SummaryParams true "example"
 // @Success      200 {object}  models.Summary
 // @Failure      400
 // @Failure      404
+// @Router       /summary [get]
 func (controller *SummaryController) Generate30DaysSummary(ctx fiber.Ctx) error {
 	params := models.SummaryParams{}
 

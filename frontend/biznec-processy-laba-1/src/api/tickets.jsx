@@ -31,3 +31,7 @@ export function confirmTickets(
 ) {
   return apiClient.post("/tickets/confirm", body);
 }
+
+export function getTicketsByBooking(apiClient, booking) {
+  return apiClient.get("/tickets", { params: { booking_reference: booking } });
+}

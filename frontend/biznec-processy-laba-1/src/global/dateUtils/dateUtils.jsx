@@ -82,3 +82,9 @@ export function getYearDiferenceFrom2Strings(string1, string2) {
 
   return ageDifference;
 }
+
+export function subtractDays(date, days) {
+  const result = new Date(date);
+  result.setDate(result.getDate() - days);
+  return result.toISOString().split("T")[0];
+}

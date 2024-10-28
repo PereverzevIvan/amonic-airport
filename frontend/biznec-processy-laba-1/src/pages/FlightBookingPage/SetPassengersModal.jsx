@@ -8,15 +8,7 @@ import { getScheduleIDsInFlight } from "../../global/scheduleUtils/scheduleUtils
 import { bookingTickets } from "../../api/tickets.jsx";
 import { useApi } from "../../context/apiContext.jsx";
 import { ConfirmPaymentModal } from "./confirmPaymentModal.jsx";
-
-function createMapFromList(list) {
-  let map = new Map();
-  list.forEach((element) => {
-    map.set(`${element.id}`, element);
-  });
-
-  return map;
-}
+import { createMapFromList } from "../../global/mapUtils/mapUtils.jsx";
 
 export function SetPassengersModal({
   show,

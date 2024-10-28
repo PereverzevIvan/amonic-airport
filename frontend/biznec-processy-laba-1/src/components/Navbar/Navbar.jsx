@@ -8,13 +8,13 @@ const links = [
     path: rp.USER_HOME_ROUTE,
     needAuth: true,
     needRole: "admin",
-    title: "Страница пользователя",
+    title: "Пользователь",
   },
   {
     path: rp.ADMIN_HOME_ROUTE,
     needAuth: true,
     needRole: "admin",
-    title: "Страница админа",
+    title: "Админ",
   },
   {
     path: rp.SCHEDULE_ROUTE,
@@ -26,7 +26,31 @@ const links = [
     path: rp.FLIGHT_BOOKING_ROUTE,
     needAuth: true,
     needRole: "admin",
-    title: "Бронирование билетов",
+    title: "Бронирования",
+  },
+  {
+    path: rp.SURVEY_PAGE,
+    needAuth: true,
+    needRole: "admin",
+    title: "Опросы",
+  },
+  {
+    path: rp.AMINITIES_ROUTE,
+    needAuth: true,
+    needRole: "admin",
+    title: "Услуги",
+  },
+  {
+    path: rp.AMINITIES_REPORT_ROUTE,
+    needAuth: true,
+    needRole: "admin",
+    title: "Отчет по услугам",
+  },
+  {
+    path: rp.SUMMARY_ROUTE,
+    needAuth: true,
+    needRole: "admin",
+    title: "Статистика",
   },
 ];
 

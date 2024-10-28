@@ -9,6 +9,10 @@ import { ProtectedRoute } from "./ProtectedRoute";
 import { BaseErrorPage } from "../../pages/ErrorPages/BaseErorrPage/BaseErrorPage";
 import SchedulePage from "../../pages/SchedulePage/SchedulePage";
 import FlightBookingPage from "../../pages/FlightBookingPage/FlightBookingPage";
+import AmenitiesPage from "../../pages/AmenitiesPage/AmenitiesPage";
+import AirlinesShortSummaryPage from "../../pages/AirlinesShortSummaryPage/AirlinesShortSummaryPage";
+import AmenitiesReportPage from "../../pages/AmenitiesReportPage/AmenitiesReportPage";
+import SurveyPage from "../../pages/SurvayPage/SurvayPage";
 
 function Router() {
   return (
@@ -45,6 +49,38 @@ function Router() {
           element={
             <ProtectedRoute requiredRole={"admin"}>
               <FlightBookingPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path={rp.SUMMARY_ROUTE}
+          element={
+            <ProtectedRoute requiredRole={"admin"}>
+              <AirlinesShortSummaryPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path={rp.AMINITIES_REPORT_ROUTE}
+          element={
+            <ProtectedRoute requiredRole={"admin"}>
+              <AmenitiesReportPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path={rp.AMINITIES_ROUTE}
+          element={
+            <ProtectedRoute requiredRole={"admin"}>
+              <AmenitiesPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path={rp.SURVEY_PAGE}
+          element={
+            <ProtectedRoute requiredRole={"admin"}>
+              <SurveyPage />
             </ProtectedRoute>
           }
         />

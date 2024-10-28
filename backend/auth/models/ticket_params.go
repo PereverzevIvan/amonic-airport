@@ -113,7 +113,7 @@ type TicketsBookResult struct {
 }
 
 type TicketsGetAllParams struct {
-	BookingReference string `json:"booking_reference"`
+	BookingReference string `json:"booking_reference" query:"booking_reference"`
 }
 
 func (params *TicketsGetAllParams) Validate() error {

@@ -69,6 +69,10 @@ func (r AmenityRepo) EditTicketAmenities(prev_amenity_ids []int, default_amenity
 		return err
 	}
 
+	log.Info(prev_amenity_ids)
+	log.Info(default_amenity_ids)
+	log.Info(params.AmenityIDs)
+
 	amenities_map := map[int]*models.Amenity{}
 	for _, amenity := range amenities {
 		amenities_map[amenity.ID] = amenity
@@ -106,6 +110,7 @@ func (r AmenityRepo) EditTicketAmenities(prev_amenity_ids []int, default_amenity
 		}
 
 		err := tx.
+			Debug().
 			Model(&models.AmenityTicket{}).
 			Where("TicketID = ? AND AmenityID = ?", params.TicketID, prev_amenity_id).
 			Delete(&models.AmenityTicket{}).Error
@@ -141,6 +146,7 @@ func (r AmenityRepo) EditTicketAmenities(prev_amenity_ids []int, default_amenity
 		amenity_price = amenities_map[new_amenity_id].Price
 
 		err := tx.
+			Debug().
 			Model(&models.AmenityTicket{}).
 			Create(&models.AmenityTicket{
 				TicketID:  params.TicketID,

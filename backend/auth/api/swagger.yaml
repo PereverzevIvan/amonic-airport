@@ -720,6 +720,32 @@ paths:
       summary: Поиск полётов между двумя аэропортами с пересадками
       tags:
       - Schedules
+  /summary:
+    get:
+      consumes:
+      - application/json
+      description: Generate 30 days summary
+      parameters:
+      - in: query
+        name: end_date
+        type: string
+      - in: query
+        name: start_date
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Summary'
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+      summary: Generate 30 days summary
+      tags:
+      - Airline Summary
   /ticket-amenities:
     get:
       consumes:
