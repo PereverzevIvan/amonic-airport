@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import "./SurvayPage.scss";
+import Button from "../../components/Button/Button";
 
 const BEGIN_DATE = "2016-01-01";
 // const BEGIN_DATE = "2025-01-01";
@@ -19,7 +20,7 @@ const RESULT_DIAGRAM_COLORS = [
 
 const getGroupsWithValues = async () => {
   var response = await axios.get(
-    `http://localhost:3000/api/survey/groups-with-values`,
+    `http://localhost:3000/api/survey/groups-with-values`
   );
 
   // Delete Departure
@@ -34,7 +35,7 @@ const getGroupsWithValues = async () => {
 
 const getQuestionsWithAnswers = async () => {
   var response = await axios.get(
-    `http://localhost:3000/api/survey/questions-with-answers`,
+    `http://localhost:3000/api/survey/questions-with-answers`
   );
   return response.data;
 };
@@ -99,14 +100,14 @@ const getRespondentsAnswers = async ({ queryKey }) => {
   try {
     var data_respondents_answers = initDefaultRespondentsAnswers(
       new_data_questions,
-      new_data_groups,
+      new_data_groups
     );
 
     var response = await axios.get(
       `http://localhost:3000/api/surveys/respondents-answers?` +
         `begin_date=${begin_date}` +
         `&end_date=${end_date}` +
-        generateFilterGroupValues(filter_group_values),
+        generateFilterGroupValues(filter_group_values)
     );
 
     response.data.map((respondent_answer) => {
@@ -158,7 +159,7 @@ const initFilterGroupValues = (data_groups, setFilterGroupValues) => {
 const updateCountActiveGroupValueColumns = (
   data_groups,
   filter_group_values,
-  setCountActiveGroupValueColumns,
+  setCountActiveGroupValueColumns
 ) => {
   var count_active_group_value_columns = 0;
 
@@ -177,6 +178,7 @@ const updateCountActiveGroupValueColumns = (
 };
 
 function SurveyPage() {
+  const [showFull, setShowFull] = useState(false);
   var [begin_date, setBeginDate] = useState(BEGIN_DATE);
   var [end_date, setEndDate] = useState(END_DATE);
   var [filter_group_values, setFilterGroupValues] = useState({});
@@ -208,7 +210,7 @@ function SurveyPage() {
     updateCountActiveGroupValueColumns(
       data_groups,
       filter_group_values,
-      setCountActiveGroupValueColumns,
+      setCountActiveGroupValueColumns
     );
   }, [data_groups, filter_group_values]);
 
@@ -327,10 +329,53 @@ function SurveyPage() {
                 {count_answers}
               </td>
             );
-          },
+          }
         );
-      },
+      }
     );
+  };
+
+  var map_general_respondents_answers = () => {
+    return Object.entries(data_groups).map(([group_id, group]) => {
+      if (filter_group_values[group_id].is_active == false) return <></>;
+
+      return group.values.map((group_value, group_value_index) => {
+        if (
+          filter_group_values[group_id].group_value_id != 0 &&
+          filter_group_values[group_id].group_value_id != group_value.id
+        ) {
+          return <></>;
+        }
+
+        if (filter_group_values[group_id].is_active == false) return <></>;
+
+        let countGroupValueAnswers = 0;
+        Object.entries(data_respondents_answers).map(([_, question]) => {
+          Object.entries(question).map(([_, answer]) => {
+            Object.entries(answer).map(([_, group]) => {
+              if (group_value.id in group) {
+                countGroupValueAnswers += group[group_value.id];
+              }
+            });
+          });
+        });
+
+        return (
+          <td
+            scope="col"
+            style={
+              group_value_index == 0
+                ? { borderLeft: "3px solid black" }
+                : group_value_index == group.values.length
+                ? { borderRight: "3px solid black" }
+                : {}
+            }
+          >
+            {countGroupValueAnswers}
+          </td>
+        );
+      });
+    });
   };
 
   var calc_row_total = (question_id, answer_id) => {
@@ -350,7 +395,7 @@ function SurveyPage() {
 
           total_sum += count_answers;
         });
-      },
+      }
     );
 
     return total_sum;
@@ -366,7 +411,7 @@ function SurveyPage() {
       total_question_answers_count += answer_row_total;
     });
 
-    return question.answers.map((answer, answer_idx) => {
+    return question.answers.map((_, answer_idx) => {
       var cur_background_color = RESULT_DIAGRAM_COLORS[answer_idx];
 
       var width_ratio =
@@ -380,246 +425,323 @@ function SurveyPage() {
             height: ".5rem",
             backgroundColor: cur_background_color,
           }}
-        >
-          {/* {question_answers_count_arr[answer_idx]} */}
-        </div>
+        ></div>
       );
     });
-    // return <div style={{
-    //     width: "100%",
-    //     height: ".5rem",
-    //     backgroundColor: "red"
-    // }}></div>
   };
 
   return (
-    <section className="survey-page">
-      <label>
-        Select begin date:
-        <input
-          className="form__input"
-          type="date"
-          id="begin_date"
-          value={begin_date}
-          onChange={(e) => {
-            console.log("change", e.target.value);
-            setBeginDate(e.target.value);
-            // setSelectedDate(e.target.value);
-          }}
-        />
-      </label>
-      <label>
-        Select end date:
-        <input
-          className="form__input"
-          type="date"
-          id="end_date"
-          value={end_date}
-          onChange={(e) => {
-            console.log("change", e.target.value);
-            setEndDate(e.target.value);
-            // setSelectedDate(e.target.value);
-          }}
-        />
-      </label>
-      <table className="table" style={{ width: "100%" }}>
-        <caption>Результаты опроса</caption>
-        <thead className="table__head">
-          <tr className="table__row" key={0}>
-            {/* LEFT SIDE FOR QUESTIONS AND STATS */}
-            <th scope="col" key={0}></th>
-            <th scope="col" key={1}></th>
-            {Object.entries(data_groups).map(([group_id, group]) => {
-              if (filter_group_values[group_id].is_active == false) return;
-
-              return (
-                <th
-                  scope="col"
-                  style={{
-                    borderLeft: "3px solid black",
-                    borderRight: "3px solid black",
-                  }}
-                  colSpan={
-                    filter_group_values[group_id].group_value_id == 0
-                      ? group.values.length
-                      : 1
-                  }
-                  key={"group" + group_id}
-                >
-                  {group.name}
-                </th>
-              );
-            })}
-          </tr>
-          <tr key={1}>
-            <th scope="col"></th>
-            <th scope="col">Total</th>
-            {Object.entries(data_groups).map(([group_id, group]) => {
-              if (filter_group_values[group_id].is_active == false) return;
-
-              return group.values.map((group_value, group_value_index) => {
-                if (
-                  filter_group_values[group_id].group_value_id != 0 &&
-                  filter_group_values[group_id].group_value_id != group_value.id
-                ) {
-                  return;
-                }
-                return (
-                  <th
-                    scope="col"
-                    style={
-                      group_value_index == 0
-                        ? { borderLeft: "3px solid black" }
-                        : group_value_index == group.values.length
-                          ? { borderRight: "3px solid black" }
-                          : {}
-                    }
-                  >
-                    {group_value.name}
-                  </th>
-                );
-              });
-            })}
-          </tr>
-        </thead>
-        <tbody key={"test-table-body"}>
-          {Object.entries(data_questions).map(([question_id, question]) => (
-            <>
-              <tr key={question.id}>
-                <th scope="row" key={question.text}>
-                  {question.text}
-                </th>
-                <td
-                  scope="row"
-                  colSpan={1 + count_active_group_value_columns} // +1 for 'total' column
-                  style={{
-                    border: "none",
-                    borderTop: "1px solid white",
-                  }}
-                >
-                  <div style={{ display: "flex", width: "100%" }}>
-                    {generateResultDiagram(question)}
-                  </div>
-                </td>
-                {/* {
-                                    question.answers.map((answer) =>
-                                        <td>{answer.text}</td>
-                                    )
-                                } */}
-              </tr>
-              {question.answers.map((answer, answer_idx) => (
-                <tr key={question.id + " " + answer.id}>
-                  <td
-                    scope="row"
-                    key={"answer " + question.id + " " + answer.id}
-                    style={{
-                      textAlign: "right",
-                      //borderColor: RESULT_DIAGRAM_COLORS[answer_idx] + "55",
-                      backgroundColor: RESULT_DIAGRAM_COLORS[answer_idx] + "33",
-                    }}
-                  >
-                    {answer.text}
-                  </td>
-                  <td
-                    scope="row"
-                    key={question.id + " " + answer.id}
-                    style={{
-                      //borderColor: RESULT_DIAGRAM_COLORS[answer_idx] + "55",
-                      backgroundColor: RESULT_DIAGRAM_COLORS[answer_idx] + "33",
-                    }}
-                  >
-                    <b>{calc_row_total(question.id, answer.id)}</b>
-                  </td>
-                  {map_respondents_answers(question.id, answer.id, answer_idx)}
-                </tr>
-              ))}
-            </>
-          ))}
-        </tbody>
-        {/* <tfoot>
-                <tr>
-                    <th scope="row" colSpan="2">Average age</th>
-                    <td>33</td>
-                </tr>
-            </tfoot> */}
-      </table>
-      <div
-        style={{
-          display: "flex",
-          width: "100%",
-          gap: "1rem",
-          flexWrap: "wrap",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        {data_questions[Object.keys(data_questions)[0]].answers.map(
-          (answer, answer_idx) => (
-            <div
-              style={{
-                display: "flex",
-                gap: ".2rem",
-                alignItems: "center",
-              }}
-            >
-              <div
-                style={{
-                  width: "1rem",
-                  height: "1rem",
-                  backgroundColor: RESULT_DIAGRAM_COLORS[answer_idx],
-                }}
-              />
-              <p>{answer.text}</p>
-            </div>
-          ),
+    <>
+      <section className="survey-page">
+        {showFull == true ? (
+          <Button
+            style={{ justifySelf: "start" }}
+            onClick={() => setShowFull(false)}
+          >
+            Скрыть полную версию
+          </Button>
+        ) : (
+          <Button
+            style={{ width: "20% !important" }}
+            onClick={() => setShowFull(true)}
+          >
+            Показать полную версию
+          </Button>
         )}
-      </div>
+      </section>
 
-      {/* Filters */}
-      {Object.entries(data_groups).map(([group_id, group]) => (
-        <div>
+      {!showFull && (
+        <section className="survey-page">
+          <table className="table" style={{ width: "100%" }}>
+            <caption>Результаты опроса</caption>
+            <thead className="table__head">
+              <tr className="table__row" key={0}>
+                {/* LEFT SIDE FOR QUESTIONS AND STATS */}
+                {Object.entries(data_groups).map(([group_id, group]) => {
+                  if (filter_group_values[group_id].is_active == false) return;
+
+                  return (
+                    <th
+                      scope="col"
+                      style={{
+                        borderLeft: "3px solid black",
+                        borderRight: "3px solid black",
+                      }}
+                      colSpan={
+                        filter_group_values[group_id].group_value_id == 0
+                          ? group.values.length
+                          : 1
+                      }
+                      key={"group" + group_id}
+                    >
+                      {group.name}
+                    </th>
+                  );
+                })}
+              </tr>
+              <tr key={1}>
+                {Object.entries(data_groups).map(([group_id, group]) => {
+                  if (filter_group_values[group_id].is_active == false) return;
+
+                  return group.values.map((group_value, group_value_index) => {
+                    if (
+                      filter_group_values[group_id].group_value_id != 0 &&
+                      filter_group_values[group_id].group_value_id !=
+                        group_value.id
+                    ) {
+                      return;
+                    }
+                    return (
+                      <th
+                        scope="col"
+                        style={
+                          group_value_index == 0
+                            ? { borderLeft: "3px solid black" }
+                            : group_value_index == group.values.length
+                            ? { borderRight: "3px solid black" }
+                            : {}
+                        }
+                      >
+                        {group_value.name}
+                      </th>
+                    );
+                  });
+                })}
+              </tr>
+            </thead>
+            <tbody key={"test-table-body"}>
+              {map_general_respondents_answers()}
+            </tbody>
+          </table>
+        </section>
+      )}
+
+      {showFull && (
+        <section className="survey-page">
           <label>
+            Select begin date:
             <input
               className="form__input"
-              type="checkbox"
-              value={group.name}
-              checked={filter_group_values[group_id].is_active}
+              type="date"
+              id="begin_date"
+              value={begin_date}
               onChange={(e) => {
-                console.log("toggle filter: ", e.target.checked);
-                setFilterGroupValues({
-                  ...filter_group_values,
-                  [group_id]: {
-                    ...filter_group_values[group_id],
-                    is_active: e.target.checked,
-                  },
-                });
+                console.log("change", e.target.value);
+                setBeginDate(e.target.value);
+                // setSelectedDate(e.target.value);
               }}
             />
-            {group.name}
           </label>
-          <select
-            className="form__input"
-            value={filter_group_values[group_id].group_value_id}
-            onChange={(e) => {
-              console.log("change filter: ", e.target.value);
+          <label>
+            Select end date:
+            <input
+              className="form__input"
+              type="date"
+              id="end_date"
+              value={end_date}
+              onChange={(e) => {
+                console.log("change", e.target.value);
+                setEndDate(e.target.value);
+                // setSelectedDate(e.target.value);
+              }}
+            />
+          </label>
+          <table className="table" style={{ width: "100%" }}>
+            <caption>Результаты опроса</caption>
+            <thead className="table__head">
+              <tr className="table__row" key={0}>
+                {/* LEFT SIDE FOR QUESTIONS AND STATS */}
+                <th scope="col" key={0}></th>
+                <th scope="col" key={1}></th>
+                {Object.entries(data_groups).map(([group_id, group]) => {
+                  if (filter_group_values[group_id].is_active == false) return;
 
-              setFilterGroupValues({
-                ...filter_group_values,
-                [group_id]: {
-                  ...filter_group_values[group_id],
-                  group_value_id: e.target.value,
-                },
-              });
+                  return (
+                    <th
+                      scope="col"
+                      style={{
+                        borderLeft: "3px solid black",
+                        borderRight: "3px solid black",
+                      }}
+                      colSpan={
+                        filter_group_values[group_id].group_value_id == 0
+                          ? group.values.length
+                          : 1
+                      }
+                      key={"group" + group_id}
+                    >
+                      {group.name}
+                    </th>
+                  );
+                })}
+              </tr>
+              <tr key={1}>
+                <th scope="col"></th>
+                <th scope="col">Total</th>
+                {Object.entries(data_groups).map(([group_id, group]) => {
+                  if (filter_group_values[group_id].is_active == false) return;
+
+                  return group.values.map((group_value, group_value_index) => {
+                    if (
+                      filter_group_values[group_id].group_value_id != 0 &&
+                      filter_group_values[group_id].group_value_id !=
+                        group_value.id
+                    ) {
+                      return;
+                    }
+                    return (
+                      <th
+                        scope="col"
+                        style={
+                          group_value_index == 0
+                            ? { borderLeft: "3px solid black" }
+                            : group_value_index == group.values.length
+                            ? { borderRight: "3px solid black" }
+                            : {}
+                        }
+                      >
+                        {group_value.name}
+                      </th>
+                    );
+                  });
+                })}
+              </tr>
+            </thead>
+            <tbody key={"test-table-body"}>
+              {Object.entries(data_questions).map(([_, question]) => (
+                <>
+                  <tr key={question.id}>
+                    <th scope="row" key={question.text}>
+                      {question.text}
+                    </th>
+                    <td
+                      scope="row"
+                      colSpan={1 + count_active_group_value_columns} // +1 for 'total' column
+                      style={{
+                        border: "none",
+                        borderTop: "1px solid white",
+                      }}
+                    >
+                      <div style={{ display: "flex", width: "100%" }}>
+                        {generateResultDiagram(question)}
+                      </div>
+                    </td>
+                  </tr>
+                  {question.answers.map((answer, answer_idx) => (
+                    <tr key={question.id + " " + answer.id}>
+                      <td
+                        scope="row"
+                        key={"answer " + question.id + " " + answer.id}
+                        style={{
+                          textAlign: "right",
+                          //borderColor: RESULT_DIAGRAM_COLORS[answer_idx] + "55",
+                          backgroundColor:
+                            RESULT_DIAGRAM_COLORS[answer_idx] + "33",
+                        }}
+                      >
+                        {answer.text}
+                      </td>
+                      <td
+                        scope="row"
+                        key={question.id + " " + answer.id}
+                        style={{
+                          //borderColor: RESULT_DIAGRAM_COLORS[answer_idx] + "55",
+                          backgroundColor:
+                            RESULT_DIAGRAM_COLORS[answer_idx] + "33",
+                        }}
+                      >
+                        <b>{calc_row_total(question.id, answer.id)}</b>
+                      </td>
+                      {map_respondents_answers(
+                        question.id,
+                        answer.id,
+                        answer_idx
+                      )}
+                    </tr>
+                  ))}
+                </>
+              ))}
+            </tbody>
+          </table>
+          <div
+            style={{
+              display: "flex",
+              width: "100%",
+              gap: "1rem",
+              flexWrap: "wrap",
+              justifyContent: "center",
+              alignItems: "center",
             }}
           >
-            <option value={0}>All</option>
-            {group.values.map((group_value) => (
-              <option value={group_value.id}>{group_value.name}</option>
-            ))}
-          </select>
-        </div>
-      ))}
-    </section>
+            {data_questions[Object.keys(data_questions)[0]].answers.map(
+              (answer, answer_idx) => (
+                <div
+                  style={{
+                    display: "flex",
+                    gap: ".2rem",
+                    alignItems: "center",
+                  }}
+                >
+                  <div
+                    style={{
+                      width: "1rem",
+                      height: "1rem",
+                      backgroundColor: RESULT_DIAGRAM_COLORS[answer_idx],
+                    }}
+                  />
+                  <p>{answer.text}</p>
+                </div>
+              )
+            )}
+          </div>
+
+          {/* Filters */}
+          {Object.entries(data_groups).map(([group_id, group]) => (
+            <div>
+              <label>
+                <input
+                  className="form__input"
+                  type="checkbox"
+                  value={group.name}
+                  checked={filter_group_values[group_id].is_active}
+                  onChange={(e) => {
+                    console.log("toggle filter: ", e.target.checked);
+                    setFilterGroupValues({
+                      ...filter_group_values,
+                      [group_id]: {
+                        ...filter_group_values[group_id],
+                        is_active: e.target.checked,
+                      },
+                    });
+                  }}
+                />
+                {group.name}
+              </label>
+              <select
+                className="form__input"
+                value={filter_group_values[group_id].group_value_id}
+                onChange={(e) => {
+                  console.log("change filter: ", e.target.value);
+
+                  setFilterGroupValues({
+                    ...filter_group_values,
+                    [group_id]: {
+                      ...filter_group_values[group_id],
+                      group_value_id: e.target.value,
+                    },
+                  });
+                }}
+              >
+                <option value={0}>All</option>
+                {group.values.map((group_value) => (
+                  <option value={group_value.id}>{group_value.name}</option>
+                ))}
+              </select>
+            </div>
+          ))}
+        </section>
+      )}
+    </>
   );
 }
 

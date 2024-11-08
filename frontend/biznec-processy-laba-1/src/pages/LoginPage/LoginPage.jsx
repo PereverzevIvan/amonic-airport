@@ -41,7 +41,7 @@ function LoginForm() {
 
   function resetFailedTries() {
     setErrorMessage(
-      "Достигнуто максимальное количество попыток входа. Повторите попытку через 10 секунд.",
+      "Достигнуто максимальное количество попыток входа. Повторите попытку через 10 секунд."
     );
     setTimerIsVisible(true);
 
@@ -62,7 +62,7 @@ function LoginForm() {
     login(apiClient, formData).catch((error) => {
       if (!error.response) {
         setErrorMessage(
-          "Произошла обшика сети. Попробуйте авторизоваться позже",
+          "Произошла обшика сети. Попробуйте авторизоваться позже"
         );
       }
       if (error.response.status == 401) {
